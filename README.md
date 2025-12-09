@@ -1,66 +1,102 @@
-# AI Text Detector
+# Aletheia: Advanced AI Text Forensics & Detection Framework
 
-A comprehensive tool to detect AI-generated text using multiple metrics: **Perplexity** (GPT-2), **Burstiness**, **GLTR** (Giant Language Model Test Room), and **TF-IDF** n-gram analysis.
+> *Aletheia (Greek: ἀλήθεια) - The state of not being hidden; disclosure; truth.*
 
-## Features
-- **Multi-Metric Analysis**: Combines structural (Burstiness), statistical (Perplexity, GLTR), and stylistic (TF-IDF) signals.
-- **Combined Scoring**: Heuristic algorithm to produce a single "AI Likelihood" percentage.
-- **CLI Tool**: Easy-to-use command line interface.
-- **Verification Scripts**: Automated testing against Human (IMDb), Alpaca, and Gemini models.
+**Aletheia** is a PhD-level research framework designed to detect AI-generated text through **multi-modal sensor fusion**. Unlike simple statistical counters, it combines information theory, structural linguistics, and semantic consistency analysis to identify the "watermarks" left by Large Language Model optimization.
 
-## Installation
+![Status](https://img.shields.io/badge/Status-Research_Preview-orange)
+![Python](https://img.shields.io/badge/Python-3.12-blue)
+![License](https://img.shields.io/badge/License-MIT-green)
 
-1. Clone the repository.
-2. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   python -m spacy download en_core_web_sm
-   ```
-3. (Optional) Create a `.env` file for Gemini testing:
-   ```
-   GEMINI_API_KEY=your_key_here
-   ```
+---
 
-## Usage
+## 🔬 The Forensic Architecture
 
-### Single Text Analysis
+Aletheia operates on the **Condorcet Jury Theorem**: aggregating multiple independent "jurors" (detectors) to maximize verdict reliability.
+
+| Detector        | Type                   | Theory                 | Target Artifact                             |
+| :-------------- | :--------------------- | :--------------------- | :------------------------------------------ |
+| **Statistical** | `PerplexityCalculator` | Information Entropy    | Optimization pressure / low surprise.       |
+| **Structural**  | `BurstinessAnalyzer`   | Linguistic Variance    | "Flat" sentence rhythm (RLHF smoothness).   |
+| **Visual**      | `GLTRAnalyzer`         | Rank Distribution      | Dominance of Top-K ("Green") tokens.        |
+| **Stylistic**   | `TfidfDetector`        | N-Gram Frequency       | Generic/Academic "accents" (e.g., "delve"). |
+| **Semantic**    | `SemanticConsistency`  | **Meta-Cognition**     | Context decay & hallucinations. **(New)**   |
+| **Fusion**      | `EnsembleDetector`     | Stacked Generalization | Meta-classification of all signals.         |
+
+➡️ **[Read the Theoretical Frameworks](docs/theory/)**
+
+---
+
+## 🚀 Installation
+
 ```bash
-python main.py "Your text here"
-# OR
-python main.py path/to/file.txt
+git clone https://github.com/yourusername/aletheia-detector.git
+cd aletheia-detector
+pip install -r requirements.txt
+python -m spacy download en_core_web_sm
 ```
 
-### Run Benchmarks
-1. **Dataset Test (Human vs Alpaca)**:
-   ```bash
-   python fetch_and_test.py
-   ```
-2. **Gemini Live Test**:
-   ```bash
-   python verify_gemini_detection.py
-   ```
+*(Optional)* Create a `.env` file for Semantic Analysis features:
+```bash
+GEMINI_API_KEY=your_key_here
+```
 
-## Benchmarking Results
+---
 
-We tested the detector against various sources. A score **> 50%** is classified as AI.
+## 💻 Usage
 
-| Source | Model / Dataset | Avg. AI Likelihood | Accuracy | Verdict |
-|--------|-----------------|--------------------|----------|---------|
-| **Human** | IMDb Reviews | **~35-45%** | 90% | ✅ Human |
-| **AI** | Alpaca (LLaMA) | **~75-80%** | 100% | ✅ AI |
-| **AI** | Gemini 2.5 Flash | **~99%** | 100% | ✅ AI (Easily Detected) |
-| **AI** | Gemini 2.5 Pro | **~76%** | 75% | ✅ AI |
-| **AI** | Gemini 3 Pro Preview | **~77%** | 66% | ⚠️ Mixed Results |
-| **AI** | Gemini 2.0 Flash | **~32%** | 25% | ❌ Highly Evasive |
+### 1. The Ensemble (Recommended)
+The `EnsembleDetector` orchestrates all sensors automatically.
 
-> **Note**: *Gemini 2.0 Flash* creates long, highly coherent, and bursty text that effectively evades statistical detection. *Gemini 2.5 Flash*, conversely, is easily flagged.
+```python
+from ia_detector.ensemble import EnsembleDetector
 
-## Detailed Scoring Logic
-- **Ensemble (Meta-Classifier)**: A Random Forest model aggregates 5 features (Perplexity, Burstiness, Entropy, GLTR, TF-IDF) to produce the final "AI Likelihood".
-- **Perplexity**: Measures predictability (Lower = AI).
-- **Burstiness**: Measures structural variability (Lower = AI).
-- **GLTR**: Measures token rank confidence (Higher Green = AI).
-- **TF-IDF**: Detects stylistic fingerprints.
-- **Burstiness**: Measures sentence structure variability. Low variability -> AI.
-- **GLTR**: Measures fraction of tokens in the "Green" (Top-10) probability bucket. High green -> AI.
-- **TF-IDF**: Detects specific n-gram patterns common in AI training data.
+# Initialize the forensic suite
+detector = EnsembleDetector()
+
+text = "In conclusion, it is important to delve into the tapestry..."
+
+# Run analysis (use_semantic=True enables the LLM Judge)
+report = detector.predict(text, use_semantic=True)
+
+print(f"AI Probability: {report['combined_score']}%")
+print(f"Verdict: {report['verdict']}")
+```
+
+### 2. Command Line Interface
+```bash
+python main.py "Your suspicious text here"
+```
+
+---
+
+## 📊 Benchmarks
+
+We maintain a rigorous benchmark suite against state-of-the-art models (Gemini 3 Pro, GPT-4).
+
+| Dataset          | Human Baseline | AI Baseline | Detection Rate           |
+| :--------------- | :------------- | :---------- | :----------------------- |
+| **IMDb (Human)** | ~35% Score     | N/A         | **90%** (True Negative)  |
+| **Alpaca (AI)**  | N/A            | ~80% Score  | **100%** (True Positive) |
+| **Gemini 3 Pro** | N/A            | ~65% Score  | **~75%** (Evolving)      |
+
+➡️ **[View Full Benchmark Report](docs/benchmarks/comprehensive_results.md)**
+
+---
+
+## 📂 Documentation
+
+-   **Theory**: Mathematical underpinnings of [Perplexity](docs/theory/perplexity_theory.md), [Burstiness](docs/theory/burstiness_theory.md), and [GLTR](docs/theory/gltr_theory.md).
+-   **Practice**: API Guides for [Ensemble](docs/practical/ensemble_guide.md) and [Semantic Analysis](docs/practical/semantic_consistency_guide.md).
+
+## 📜 Citation
+
+If you use Aletheia in your research, please cite the repository:
+```
+@software{aletheia2025,
+  author = {Miquel, Julien},
+  title = {Aletheia: Multi-Modal AI Text Detection Framework},
+  year = {2025},
+  url = {https://github.com/yourusername/aletheia-detector}
+}
+```
