@@ -7,6 +7,20 @@ GLTR (Giant Language Model Test Room) is based on the forensic hypothesis that A
 ### 1.1 The Top-K Visualizer
 For any given context $C$, a language model predicts a probability distribution over the vocabulary $V$. We rank all tokens $w \in V$ by $P(w|C)$.
 
+```mermaid
+graph LR
+    Prob[Token Probability] --> Rank{Rank Bucket}
+    Rank -->|Rank 1-10| Green[Green Zone<br/>(Predictable)]
+    Rank -->|Rank 11-100| Yellow[Yellow Zone<br/>(Specific)]
+    Rank -->|Rank 101-1000| Red[Red Zone<br/>(Creative)]
+    Rank -->|Rank > 1000| Purple[Purple Zone<br/>(Surprising)]
+    
+    style Green fill:#ccffcc,stroke:#0f0
+    style Yellow fill:#ffffcc,stroke:#cc0
+    style Red fill:#ffcccc,stroke:#f00
+    style Purple fill:#e6ccff,stroke:#80f
+```
+
 -   **Green Zone (Top 10)**: The most likely words.
 -   **Yellow Zone (Top 100)**: Likely but slightly more specific.
 -   **Red Zone (Top 1000)**: Creative or unusual choices.

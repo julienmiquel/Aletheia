@@ -39,28 +39,26 @@ PROMPTS = [
     "Describe the function of mitochondria.",
     "Write a Python function to fast fourier transform.",
     "Explain the difference between TCP and UDP.",
-    # --- Adversarial / Human-Mimicry ---
-    "Write a casual text message to a friend about being late, use slang and lowercase.",
-    "Write a rant about a bad restaurant experience, include typos.",
+    # --- Adversarial / Human-Mimicry (Hard) ---
+    "Write a casual text message to a friend about being late, use slang, lowercase, and no punctuation.",
+    "Write a rant about a bad restaurant experience, include typos and run-on sentences.",
     "Write a short story that sounds like it was written by a 10-year-old.",
-    "Explain gravity but make it sound uncertain and conversational.",
-    "Write a forum post asking for relationship advice, be emotional.",
+    "Explain gravity but make it sound uncertain, broken, and conversational.",
+    "Write a forum post asking for relationship advice, be extremely emotional and repetitive.",
     "Write a tweet about a cat video, use hashtags and emojis.",
-    "Describe a dream you had, make it disjointed and confusing.",
-    # --- Mixed --- 
+    "Describe a dream you had, make it disjointed, confusing, and non-linear.",
+    "Write a Yelp review that is angry and incoherent.",
+    # --- Mixed / Abstract ---
     "Write a recipe for spicy tacos.",
     "Explain why the sky is blue.",
     "Describe the feeling of nostalgia.",
     "Write a letter to your future self.",
-    "Explain the rules of chess to a complete beginner."
-] * 2 # Duplicate to ensure we have enough base for temperature variations
-# We need 100 samples per model. We can cycle through prompts or ask for variations.
-# To get 100, we can use 25 prompts * 4 variations (temperature/style) or just repeat.
-# Let's simple repeat prompts with slight temperature variations if possible, 
-# OR just ask for "Another paragraph about..." 
-# For simplicity and speed, we will cycle prompts 4 times.
+    "Explain the rules of chess to a complete beginner.",
+    "Debate whether hotdogs are sandwiches.",
+    "Describe the smell of rain."
+] * 4 # Duplicate to ensure we have enough base for temperature variations
 
-OUTPUT_FILE = "gemini_training_data.json"
+OUTPUT_FILE = config.TRAINING_DATA_PATH
 
 def get_client(location):
     api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")

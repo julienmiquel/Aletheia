@@ -9,3 +9,5 @@ datasets
 google-genai
 python-dotenv
 pytest
+streamlit
+plotly

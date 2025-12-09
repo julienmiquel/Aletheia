@@ -29,17 +29,28 @@ class BurstinessAnalyzer:
         Returns:
             dict: A dictionary containing burstiness metrics.
         """
+        # Check Cache
+        from ia_detector.cache import ResultCache
+        if not hasattr(self, 'cache'):
+            self.cache = ResultCache()
+            
+        cached = self.cache.get(text, "burstiness")
+        if cached:
+            return cached
+
         doc = self.nlp(text)
         sentences = list(doc.sents)
         
         if not sentences:
-            return {
+            result = {
                 "sentence_count": 0,
                 "mean_sentence_length": 0,
                 "length_std_dev": 0,
                 "burstiness_coefficient": 0,
                 "lexical_entropy": 0
             }
+            self.cache.set(text, "burstiness", result)
+            return result
         
         # Calculate sentence lengths in tokens
         lengths = [len(sent) for sent in sentences]
@@ -59,10 +70,15 @@ class BurstinessAnalyzer:
             probs = [count / total_words for count in word_counts.values()]
             entropy = -sum(p * np.log(p) for p in probs)
 
-        return {
+        result = {
             "sentence_count": len(sentences),
             "mean_sentence_length": float(mean_len),
             "length_std_dev": float(std_dev),
             "burstiness_coefficient": float(cv),
             "lexical_entropy": float(entropy)
         }
+        
+        # Save to Cache
+        self.cache.set(text, "burstiness", result)
+        
+        return result

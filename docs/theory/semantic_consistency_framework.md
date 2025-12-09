@@ -11,10 +11,33 @@ This section introduces **Semantic Consistency Analysis**, a higher-order forens
 ### 2.1 Context Window Decay
 LLMs generate text autoregressively, predicting $P(w_t | w_{t-1}, ..., w_{t-k})$. While modern models possess extensive context windows (up to 1M+ tokens), the *attention mechanism* often exhibits "soft decay" over long ranges. This creates a forensic vulnerability: **Temporal Inconsistency**.
 -   **Human Memory**: Anchored in a ground-truth reality. If a subject is defined as "red" at $t=0$, a human author (accessing episodic memory) maintains this property effectively indefinitely unless a state change occurs.
--   **LLM Memory**: Probabilistic. The property "red" competes with other high-probability color tokens as the distance $t - t_0$ increases.
+-   **LLM Memory**:## 2. Theoretical Model
 
-### 2.2 Micro-Hallucinations (Dream-like Shifts)
-We define *Micro-Hallucinations* as subtle, non-factual contradictions that do not violate grammatical rules but violate narrative logic. 
+### 2.1 The Context Decay Loop
+
+As the generation length $L$ increases, the probability of a logical consistent state $S_t$ depending on initial context $C_0$ decreases for current LLMs, whereas humans maintain a "Global Narrative State".
+
+```mermaid
+stateDiagram-v2
+    [*] --> ContextInit: User Prompt
+    ContextInit --> Generation: LLM Output Stream
+    
+    state Generation {
+        direction LR
+        Token1 --> Token100: Coherent
+        Token100 --> Token500: Drift Starts
+        Token500 --> Token1000: Hallucination Risk High
+    }
+    
+    Generation --> Verification: Semantic Analyzer
+    Verification --> Consistent: Logic Holds
+    Verification --> Inconsistent: Contradiction / Drift
+    
+    Inconsistent --> [*]: Flag as AI
+    Consistent --> [*]: Likely Human / RAG
+```
+
+### 2.2 Micro-Hallucinations* as subtle, non-factual contradictions that do not violate grammatical rules but violate narrative logic. 
 *Example*: A narrative describes a room as "sunlit" (implies day) and later mentions "the moon casting shadows" without a temporal transition.
 
 ### 2.3 The "Generic Fluff" Signature

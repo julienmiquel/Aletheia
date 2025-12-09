@@ -2,11 +2,10 @@ import sqlite3
 import hashlib
 import json
 import os
-
-CACHE_DB = "detector_cache.db"
+from ia_detector import config
 
 class ResultCache:
-    def __init__(self, db_path=CACHE_DB):
+    def __init__(self, db_path=config.CACHE_DB_PATH):
         self.db_path = db_path
         with sqlite3.connect(self.db_path) as conn:
             conn.execute("CREATE TABLE IF NOT EXISTS results (key TEXT PRIMARY KEY, value TEXT)")

@@ -1,21 +1,18 @@
 import pickle
 import numpy as np
+import joblib
 import os
-import logging
-
-try:
-    from ia_detector.perplexity import PerplexityCalculator
-    from ia_detector.burstiness import BurstinessAnalyzer
-    from ia_detector.gltr import GLTRAnalyzer
-    from ia_detector.features import TfidfDetector
-    from ia_detector.llm_judge import LLMJudge
-    from ia_detector.semantic_consistency import SemanticConsistencyAnalyzer
-except ImportError:
-    # Handle case where imports might cycle or fail in partial envs
-    pass
+from ia_detector.perplexity import PerplexityCalculator
+from ia_detector.burstiness import BurstinessAnalyzer
+from ia_detector.gltr import GLTRAnalyzer
+from ia_detector.features import TfidfDetector
+from ia_detector.llm_judge import LLMJudge
+from ia_detector.semantic_consistency import SemanticConsistencyAnalyzer
+from ia_detector import config
 
 class EnsembleDetector:
-    def __init__(self, model_path='ensemble_model.pkl'):
+    def __init__(self, model_path=config.ENSEMBLE_MODEL_PATH):
+        self.model_path = model_path
         """
         Initializes the EnsembleDetector and all sub-detectors.
         """
@@ -70,8 +67,12 @@ class EnsembleDetector:
 
         # 2. Burstiness
         try:
-            metrics['burstiness'] = self.burst_calc.analyze(text).get('burstiness_coefficient')
-        except: metrics['burstiness'] = None
+            burst_res = self.burst_calc.analyze(text)
+            metrics['burstiness'] = burst_res.get('burstiness_coefficient')
+            metrics['lexical_entropy'] = burst_res.get('lexical_entropy')
+        except: 
+            metrics['burstiness'] = None
+            metrics['lexical_entropy'] = 0.0
 
         # 3. GLTR
         try:
@@ -90,7 +91,9 @@ class EnsembleDetector:
         metrics['llm_judge_score'] = None
         if use_semantic:
             try:
-                metrics['semantic_consistency'] = self.semantic_analyzer.analyze(text).get('consistency_score')
+                sem_res = self.semantic_analyzer.analyze(text)
+                metrics['semantic_consistency'] = sem_res.get('consistency_score')
+                metrics['coherence_metric'] = sem_res.get('coherence_metric')
                 metrics['llm_judge_score'] = self.llm_judge.evaluate(text).get('score')
             except Exception as e:
                 print(f"Ensemble Semantic Error: {e}")
@@ -118,13 +121,11 @@ class EnsembleDetector:
         features = [
             metrics['perplexity'],
             metrics['burstiness'],
-            metrics['gltr_green'], # Placeholder for 'entropy' used in old model? Assuming 4 feature vector
-            metrics['gltr_green'], # GLTR
+            metrics.get('lexical_entropy', 0), # Added entropy
+            metrics['gltr_green'],
             metrics['tfidf_prob']
         ]
-        # Note: The compiled model might expect different feature shape. 
-        # For safety/robustness, if dimensions mismatch, fallback to heuristic.
-        # This is a simplification.
+        
         try:
             return self.model.predict_proba([features])[0][1] * 100
         except:

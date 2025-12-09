@@ -1,22 +1,25 @@
+
 import json
 import os
 import sys
 import pickle
 import numpy as np
 from tqdm import tqdm
-from datasets import load_dataset
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import classification_report, accuracy_score
+from sklearn.metrics import classification_report
 from sklearn.model_selection import train_test_split
+from datasets import load_dataset 
 
-# Add current directory to path
-sys.path.append(os.getcwd())
+# Add root directory to path to allow importing ia_detector
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from ia_detector.perplexity import PerplexityCalculator
 from ia_detector.burstiness import BurstinessAnalyzer
 from ia_detector.gltr import GLTRAnalyzer
 from ia_detector.features import TfidfDetector
+from ia_detector import config
+
 
 GENERATED_DATA_FILE = "gemini_training_data.json"
 ENSEMBLE_MODEL_FILE = "ensemble_model.pkl"
@@ -141,16 +144,19 @@ def train_ensemble():
     print("Training Random Forest Ensemble...")
     clf = RandomForestClassifier(n_estimators=100, random_state=42)
     clf.fit(X_train, y_train)
+    model = RandomForestClassifier(n_estimators=100, random_state=42)
+    model.fit(X_train, y_train)
     
     # 3. Evaluate
-    preds = clf.predict(X_test)
+    preds = model.predict(X_test)
     print("Ensemble Performance:")
     print(classification_report(y_test, preds))
     
-    # 4. Save
-    with open(ENSEMBLE_MODEL_FILE, 'wb') as f:
-        pickle.dump(clf, f)
-    print(f"Ensemble model saved to {ENSEMBLE_MODEL_FILE}")
+    # Save Model
+    print("Saving model...")
+    with open(config.ENSEMBLE_MODEL_PATH, 'wb') as f:
+        pickle.dump(model, f)
+    print(f"Model saved to {config.ENSEMBLE_MODEL_PATH}")
 
 if __name__ == "__main__":
     train_ensemble()

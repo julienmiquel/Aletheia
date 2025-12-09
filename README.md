@@ -63,10 +63,32 @@ print(f"AI Probability: {report['combined_score']}%")
 print(f"Verdict: {report['verdict']}")
 ```
 
-### 2. Command Line Interface
+### 2. Streamlit Dashboard (UI)
+The easiest way to use Aletheia:
+```bash
+streamlit run app.py
+```
+
+### 3. Command Line Interface
 ```bash
 python main.py "Your suspicious text here"
 ```
+
+### 4. Research & Training Scripts
+The `scripts/` directory contains tools for data generation, training, and benchmarking:
+
+*   **Benchmark Suite**: Evalute detectors on IMDb vs Alpaca/Gemini.
+    ```bash
+    python scripts/benchmark_suite.py --n 50
+    ```
+*   **Generate Data**: Create adversarial training samples using Gemini (Requires API Key).
+    ```bash
+    python scripts/generate_training_data.py
+    ```
+*   **Train Ensemble**: Retrain the meta-classifier on new data.
+    ```bash
+    python scripts/train_ensemble.py
+    ```
 
 ---
 

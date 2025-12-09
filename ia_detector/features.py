@@ -3,9 +3,11 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
 import pickle
 import os
+from ia_detector import config
 
 class TfidfDetector:
-    def __init__(self, model_path='tfidf_model.pkl'):
+    def __init__(self, model_path=config.TFIDF_MODEL_PATH):
+
         """
         Initializes the TF-IDF Detector.
         """

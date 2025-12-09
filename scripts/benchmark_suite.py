@@ -1,14 +1,17 @@
+
 import os
 import sys
 import argparse
 import pandas as pd
-import time
+import json
+import tqdm
+import logging
 from datasets import load_dataset
 from datetime import datetime
 
 # Import detectors
-# Ensure project root is in path
-sys.path.append(os.getcwd())
+# Add root directory to path to allow importing ia_detector
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from ia_detector.perplexity import PerplexityCalculator
 from ia_detector.burstiness import BurstinessAnalyzer

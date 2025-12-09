@@ -15,6 +15,29 @@ Our "jurors" are:
 
 We employ a **Stacked Generalization** (Stacking) approach.
 
+```mermaid
+graph TD
+    Input[Input Text] --> PPL[Perplexity <br/>(Statistical)]
+    Input --> Burst[Burstiness <br/>(Structural)]
+    Input --> GLTR[GLTR <br/>(Visual)]
+    Input --> TFIDF[TF-IDF <br/>(Stylistic)]
+    Input --> Semantic[Semantic <br/>(Cognitive)]
+    
+    PPL --> Fusion[Ensemble / Meta-Classifier]
+    Burst --> Fusion
+    GLTR --> Fusion
+    TFIDF --> Fusion
+    Semantic --> Fusion
+    
+    Fusion --> Verdict{Final Verdict}
+    Verdict -->|Score > 50%| AI[AI-Generated]
+    Verdict -->|Score < 50%| Human[Human-Written]
+    
+    style Fusion fill:#f9f,stroke:#333,stroke-width:2px
+    style AI fill:#ffdede,stroke:#f00
+    style Human fill:#deffde,stroke:#0f0
+```
+
 ### 2.1 Feature Vector Extraction
 For a given input text $x$, we extract a feature vector $V$:
 $$ V(x) = [ PPL(x), Burst(x), F_{green}(x), P_{tfidf}(x), P_{judge}(x) ] $$

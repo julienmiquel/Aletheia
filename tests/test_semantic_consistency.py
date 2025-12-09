@@ -28,6 +28,8 @@ class TestSemanticConsistency(unittest.TestCase):
         
         self.assertEqual(result['consistency_score'], 95)
         self.assertEqual(result['reasoning'], "Text is logical.")
+        self.assertIn('coherence_metric', result)
+        self.assertIsInstance(result['coherence_metric'], float)
 
     @patch('ia_detector.semantic_consistency.genai.Client')
     def test_analyze_inconsistent(self, mock_client_cls):

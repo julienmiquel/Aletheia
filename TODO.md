@@ -1,21 +1,23 @@
-# AI Detector Improvements TODO
+# Aletheia: Implementation Roadmap
 
-## Data Quality & Diversity
-- [ ] **Diverse Prompt Engineering**: Expand prompt set beyond basic 25. Include:
-    - Technical writing (coding, docs)
-    - Creative writing (poetry, scripts)
-    - Professional communication (emails, reports)
-    - Academic writing (essays, abstracts)
-- [ ] **Adversarial Samples**: Generate text with prompts like "Write this in a human style", "Avoid AI patterns", or "Use slang and typos".
-- [ ] **Expanded Human Dataset**: IMDb is biased towards reviews. Add:
-    - Wikipedia articles (WikiText)
-    - Project Gutenberg (Literature)
-    - Reddit comments (Conversational)
+## Completed Milestones
+- [x] **Core Detectors**: Perplexity (GPT-2), Burstiness (SpaCy), GLTR (Rank Analysis), TF-IDF (Stylometry).
+- [x] **Ensemble Fusion**: Stacked meta-classifier improving accuracy over heuristics.
+- [x] **Engineering**: Parallel data generation, SQLite caching, centralized config.
+- [x] **Streamlit UI**: Interactive dashboard with metric visualization.
+- [x] **Semantic Analysis V1**: LLM-based logical consistency check + **Quantitative Coherence Metric** (Cosine Similarity).
 
-## Algorithm Enhancements
-- [ ] **Trainable Ensemble**: Replace the heuristic `get_combined_score` with a Logistic Regression or SVM classifier trained on the 4 metric outputs (PPL, Burst, GLTR, TFIDF).
-- [ ] **Dynamic Thresholding**: Adjust detection thresholds based on input length (shorter text is harder).
+## Phase 1: Robustness (Current Focus)
+- [ ] **Adversarial Benchmark**: Create a dataset of "Human-edited AI" and "Paraphrased AI" to test resistance to evasion.
+- [ ] **Dynamic Thresholding**: Implement thresholds that adapt to text length (currently static).
+- [ ] **False Positive Minimization**: Calibrate ensemble to prioritize precision on human text (avoid accusing humans).
 
-## Engineering
-- [ ] **Parallel Generation**: Speed up `generate_training_data.py` using `asyncio` or thread pools.
-- [ ] **Caching**: Cache Perplexity/GLTR results to speed up repeated testing.
+## Phase 2: Neural & Structural Features
+- [ ] **Structural Syntax**: Implement Graph-based syntactic dependency features (as per SILTD).
+- [ ] **Surrogate PPL**: Use T5/masked-language-models for "perturbation discrepancy" (DetectGPT approach) instead of raw PPL.
+- [ ] **Vector-Based Style**: Train a classifier on sentence embedding trajectories (Narrative Flow).
+
+## Phase 3: Deployment & Scale
+- [ ] **API Service**: Containerize (Docker) and expose via FastAPI.
+- [ ] **Chrome Extension**: Lightweight client using the API.
+- [ ] **Scale**: Optimize for high-throughput batch processing.

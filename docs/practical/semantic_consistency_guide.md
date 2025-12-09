@@ -27,7 +27,20 @@ result = analyzer.analyze(text_string)
 **Input**:
 -   `text_string` (str): The text to analyze. Truncated to 4000 characters by default to fit context limits efficiently.
 
-**Output** (dict):
+**Output**### 2. Quantitative Coherence Metric
+**What it is:** A mathematically calculated score (0-100) representing the "Semantic Flow" or "Lexical Cohesion" of the text.
+**How it works:**
+1.  Segments text into sentences using SpaCy.
+2.  Computes TF-IDF vectors for each sentence.
+3.  Calculates the **Cosine Similarity** between adjacent sentences ($S_i$ vs $S_{i+1}$).
+4.  Returns the average similarity.
+**Interpretation:**
+*   **High (>30)**: Sentences share many keywords/topics. Highly cohesive (sometimes repetitive).
+*   **Low (<10)**: Sentences are disjointed or jump topics rapidly.
+*   *Note:* AI often has higher coherence than creative human writing due to statistical "safety".
+
+### 3. LLM Consistency Check
+**What it is:** (dict):
 ```json
 {
     "consistency_score": 95.0,
