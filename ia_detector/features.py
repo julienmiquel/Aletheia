@@ -7,14 +7,22 @@ from ia_detector import config
 
 class TfidfDetector:
     def __init__(self, model_path=config.TFIDF_MODEL_PATH):
-
         """
-        Initializes the TF-IDF Detector.
+        Initializes the TF-IDF Detector. Model is loaded lazily.
         """
         self.model_path = model_path
-        self.pipeline = None
-        if os.path.exists(model_path):
-             self.load(model_path)
+        self._pipeline = None
+
+    @property
+    def pipeline(self):
+        if self._pipeline is None:
+            if os.path.exists(self.model_path):
+                self.load(self.model_path)
+            else:
+                # If no model exists, return None or handle appropriately
+                # For training, self.pipeline will be set by train()
+                pass
+        return self._pipeline
 
     def train(self, human_texts, ai_texts):
         """
@@ -29,13 +37,13 @@ class TfidfDetector:
         corpus = human_texts + ai_texts
         
         # Build a pipeline with N-gram features (unigrams and bigrams)
-        self.pipeline = Pipeline([
+        self._pipeline = Pipeline([
             ('tfidf', TfidfVectorizer(ngram_range=(1, 2))),
             ('clf', LogisticRegression(random_state=42))
         ])
         
         print("Training TF-IDF Detector...")
-        self.pipeline.fit(corpus, labels)
+        self._pipeline.fit(corpus, labels)
         print("Training complete.")
 
     def predict(self, text):
@@ -69,7 +77,7 @@ class TfidfDetector:
             path = self.model_path
         if os.path.exists(path):
             with open(path, 'rb') as f:
-                self.pipeline = pickle.load(f)
+                self._pipeline = pickle.load(f)
             print(f"Model loaded from {path}")
         else:
              print(f"Model file {path} not found.")
