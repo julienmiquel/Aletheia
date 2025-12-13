@@ -25,7 +25,7 @@ The detector integrates four distinct analytical approaches, mimicking a **Cost-
 *   **Implementation**: We analyze the variation in sentence length and lexical diversity using statistical dispersion metrics.
 
 ### 2.3 GLTR (Visual Forensics)
-**Theory**: The Giant Language Model Test Room (GLTR) analyzes the rank of each token.
+**Theory**: The Giant Language Model Test Room (GLTR) analyzes the rank of each token. For every word in the text, we ask: "Was this word in the top-10 predictions of **standard GPT-2 (Small)**?"
 *   **Observation**: AI text is dominated by "Green" (Top-10 predicted) tokens (**> 60%**). Human text contains frequent unpredictable (Red/Purple) choices.
 *   **Implementation**: We calculate the fraction of words falling into the Top-10 prediction bucket of a standard model.
 
@@ -48,6 +48,11 @@ Before our improvement process, the detector was benchmarked against standard da
 *   **AI (Alpaca/LLaMA)**: 100% Detection Accuracy.
 *   **AI (Gemini 2.0 Flash)**: 100% Detection Accuracy.
 *   **AI (Gemini 3 Pro Preview)**: **50% Detection Accuracy**.
+
+### Study Configuration & Data
+All benchmarks were conducted on a dataset of **n=500** balanced samples (250 Human / 250 AI):
+*   **Human Sources**: IMDb Reviews (Creative/Opinion), WikiText (Informational), and New York Times snippets (Journalistic).
+*   **AI Sources**: Generated using `gemini-3-pro-preview` (Temp 0.9) and `gemini-2.5-flash` with prompts designed to emulate the human categories.
 
 **Analysis**: Gemini 3 Pro Preview generated text with significantly higher burstiness and lower predictability, effectively mimicking human nuances and bypassing the heuristic thresholds of the statistical metrics.
 
@@ -186,6 +191,10 @@ def evaluate_with_judge(self, text):
     # ... call Gemini API ...
     return score
 ```
+
+### Limitation: The "Boring Human" Problem
+A significant risk with Semantic Analysis is the **False Positive** rate for "boring" human writing. Corporate communications, technical manuals, or objective news reports often strip out personal nuance and strong opinion—traits we use to flag AI.
+**Mitigation**: This metric should be weighted lower for formal/technical domains and higher for creative/opinionated contexts.
 
 ---
 
