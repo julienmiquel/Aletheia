@@ -32,7 +32,7 @@ Aletheia operates on the **Condorcet Jury Theorem**: aggregating multiple indepe
 ```bash
 git clone https://github.com/julienmiquel/Aletheia.git
 cd aletheia-detector
-pip install -r requirements.txt
+pip install -e .
 python -m spacy download en_core_web_sm
 ```
 
@@ -68,6 +68,7 @@ The easiest way to use Aletheia:
 ```bash
 streamlit run app.py
 ```
+*Now features **Visual Forensics**: See the "Sea of Green" GLTR visualization with color-coded token highlighting.*
 
 ### 3. Command Line Interface
 ```bash
@@ -109,7 +110,9 @@ We maintain a rigorous benchmark suite against state-of-the-art models (Gemini 3
 ## 📂 Documentation
 
 -   **Theory**: Mathematical underpinnings of [Perplexity](docs/theory/perplexity_theory.md), [Burstiness](docs/theory/burstiness_theory.md), and [GLTR](docs/theory/gltr_theory.md).
+
 -   **Practice**: API Guides for [Ensemble](docs/practical/ensemble_guide.md) and [Semantic Analysis](docs/practical/semantic_consistency_guide.md).
+-   **Development**: [Developer Guide (GEMINI.md)](GEMINI.md) - Coding standards, Lazy Loading patterns, and Gemini API best practices.
 
 ## 📜 Citation
 
