@@ -78,7 +78,10 @@ class EnsembleDetector:
         try:
             gltr_res = self.gltr_calc.analyze(text)
             metrics['gltr_green'] = self.gltr_calc.get_fraction_clean(gltr_res).get('Green')
-        except: metrics['gltr_green'] = None
+            metrics['gltr_results'] = gltr_res
+        except: 
+            metrics['gltr_green'] = None
+            metrics['gltr_results'] = []
 
         # 4. TF-IDF
         try:

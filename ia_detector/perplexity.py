@@ -6,12 +6,15 @@ from ia_detector.cache import ResultCache
 class PerplexityCalculator:
     def __init__(self, model_id='gpt2', device=None):
         """
-        Initializes the PerplexityCalculator with a pre-trained model.
+        Initializes the PerplexityCalculator. Models are loaded lazily.
         Args:
             model_id (str): The Hugging Face model ID (default: 'gpt2').
             device (str): Computation device ('cuda', 'mps', or 'cpu').
         """
         self.cache = ResultCache()
+        self.model_id = model_id
+        self._model = None
+        self._tokenizer = None
         
         if device:
              self.device = device
@@ -21,11 +24,23 @@ class PerplexityCalculator:
             self.device = 'mps'
         else:
             self.device = 'cpu'
-            
-        print(f"Loading model {model_id} on {self.device}...")
-        self.model = GPT2LMHeadModel.from_pretrained(model_id).to(self.device)
-        self.tokenizer = GPT2TokenizerFast.from_pretrained(model_id)
-        self.max_length = self.model.config.n_positions
+
+    @property
+    def model(self):
+        if self._model is None:
+            print(f"Loading model {self.model_id} on {self.device}...")
+            self._model = GPT2LMHeadModel.from_pretrained(self.model_id).to(self.device)
+        return self._model
+
+    @property
+    def tokenizer(self):
+        if self._tokenizer is None:
+            self._tokenizer = GPT2TokenizerFast.from_pretrained(self.model_id)
+        return self._tokenizer
+
+    @property
+    def max_length(self):
+        return self.model.config.n_positions
 
     def calculate(self, text, stride=512):
         """

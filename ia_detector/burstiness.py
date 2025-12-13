@@ -9,15 +9,22 @@ warnings.filterwarnings("ignore", category=UserWarning)
 class BurstinessAnalyzer:
     def __init__(self, model='en_core_web_sm'):
         """
-        Initializes the spaCy model for sentence segmentation.
+        Initializes the BurstinessAnalyzer. spaCy model is loaded lazily.
         """
-        try:
-            self.nlp = spacy.load(model)
-        except OSError:
-            print(f"Downloading {model}...")
-            from spacy.cli import download
-            download(model)
-            self.nlp = spacy.load(model)
+        self.model_name = model
+        self._nlp = None
+
+    @property
+    def nlp(self):
+        if self._nlp is None:
+            try:
+                self._nlp = spacy.load(self.model_name)
+            except OSError:
+                print(f"Downloading {self.model_name}...")
+                from spacy.cli import download
+                download(self.model_name)
+                self._nlp = spacy.load(self.model_name)
+        return self._nlp
 
     def analyze(self, text):
         """

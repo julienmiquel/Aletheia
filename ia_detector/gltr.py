@@ -6,9 +6,12 @@ from ia_detector.cache import ResultCache
 class GLTRAnalyzer:
     def __init__(self, model_name='gpt2', device=None):
         """
-        Initializes the GLTR Analyzer with a pre-trained model.
+        Initializes the GLTR Analyzer. Model is loaded lazily.
         """
         self.cache = ResultCache()
+        self.model_name = model_name
+        self._model = None
+        self._tokenizer = None
         
         if device:
              self.device = device
@@ -18,11 +21,20 @@ class GLTRAnalyzer:
             self.device = 'mps'
         else:
             self.device = 'cpu'
-            
-        print(f"Loading GLTR model {model_name} on {self.device}...")
-        self.model = GPT2LMHeadModel.from_pretrained(model_name).to(self.device)
-        self.tokenizer = GPT2TokenizerFast.from_pretrained(model_name)
-        self.tokenizer.pad_token = self.tokenizer.eos_token
+
+    @property
+    def model(self):
+        if self._model is None:
+            print(f"Loading GLTR model {self.model_name} on {self.device}...")
+            self._model = GPT2LMHeadModel.from_pretrained(self.model_name).to(self.device)
+        return self._model
+
+    @property
+    def tokenizer(self):
+        if self._tokenizer is None:
+            self._tokenizer = GPT2TokenizerFast.from_pretrained(self.model_name)
+            self._tokenizer.pad_token = self._tokenizer.eos_token
+        return self._tokenizer
 
     def analyze(self, text):
         """

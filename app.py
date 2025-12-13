@@ -160,6 +160,38 @@ if analyze_btn and text_input:
             st.metric("Stylistic Match", f"{tfidf*100:.1f}%", delta="High = AI", delta_color="inverse", help="Probability that the writing style matches known AI artifacts (e.g. overused transition words).")
             st.markdown(get_interpretation(tfidf, 0.5, True))
             st.progress(min(1.0, tfidf))
+
+        # ---------------------------------------------------------
+        # Visual Forensics (GLTR)
+        # ---------------------------------------------------------
+        if 'gltr_results' in metrics and metrics['gltr_results']:
+            st.subheader("👁️ Visual Forensics")
+            st.caption("Common words (Top 10) are Green. Unexpected words are Red/Purple. AI text is typically a 'Sea of Green'.")
+            
+            gltr_data = metrics['gltr_results']
+            html_content = "<div style='line-height: 1.8; font-family: monospace;'>"
+            
+            colors = {
+                "Green": "#d4edda",   # Light Green
+                "Yellow": "#fff3cd",  # Light Yellow
+                "Red": "#f8d7da",     # Light Red
+                "Purple": "#e2e3e5"   # Light Purple/Gray
+            }
+            
+            for item in gltr_data:
+                token = item['token']
+                # Clean up GPT-2 tokens (remove Ġ)
+                display_token = token.replace('Ġ', ' ')
+                bg_color = colors.get(item['bucket'], "#ffffff")
+                
+                # Tooltip with Rank
+                tooltip = f"Rank: {item['rank']} | Prob: {item['prob']:.4f}"
+                
+                html_content += f"<span style='background-color: {bg_color}; padding: 2px 4px; margin: 0 2px; border-radius: 4px;' title='{tooltip}'>{display_token}</span>"
+            
+            html_content += "</div>"
+            st.markdown(html_content, unsafe_allow_html=True)
+            st.markdown("---")
             
         # Semantic Section
         if use_semantic:
