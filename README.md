@@ -30,7 +30,7 @@ Aletheia operates on the **Condorcet Jury Theorem**: aggregating multiple indepe
 ## 🚀 Installation
 
 ```bash
-git clone https://github.com/yourusername/aletheia-detector.git
+git clone https://github.com/julienmiquel/Aletheia.git
 cd aletheia-detector
 pip install -r requirements.txt
 python -m spacy download en_core_web_sm
@@ -119,6 +119,6 @@ If you use Aletheia in your research, please cite the repository:
   author = {Miquel, Julien},
   title = {Aletheia: Multi-Modal AI Text Detection Framework},
   year = {2025},
-  url = {https://github.com/yourusername/aletheia-detector}
+  url = {https://github.com/julienmiquel/Aletheia}
 }
 ```
