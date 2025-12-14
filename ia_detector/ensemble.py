@@ -107,19 +107,19 @@ class EnsembleDetector:
             score = self._predict_ml(metrics, len(text))
         else:
             # Heuristic-based prediction
-            score = self._predict_heuristic(metrics)
+            score = self._predict_heuristic(metrics, len(text))
 
         return {
             "combined_score": score,
-            "verdict": "AI" if score > 50 else "Human",
-            "confidence": "High" if abs(score - 50) > 30 else "Low",
+            "verdict": "AI" if score > 60 else "Human", # Stricter threshold (was 50)
+            "confidence": "High" if abs(score - 60) > 20 else "Low",
             "metrics": metrics
         }
 
     def _predict_ml(self, metrics, length):
         # Fallback to heuristic if ML inputs are missing
         if None in [metrics['perplexity'], metrics['burstiness'], metrics['gltr_green'], metrics['tfidf_prob']]:
-            return self._predict_heuristic(metrics)
+            return self._predict_heuristic(metrics, length)
             
         features = [
             metrics['perplexity'],
@@ -132,18 +132,24 @@ class EnsembleDetector:
         try:
             return self.model.predict_proba([features])[0][1] * 100
         except:
-            return self._predict_heuristic(metrics)
+            return self._predict_heuristic(metrics, length)
 
-    def _predict_heuristic(self, metrics):
+    def _predict_heuristic(self, metrics, length=1000):
         score = 0
         weight = 0
+        
+        # Dynamic Thresholding: Relax standards for short text (< 500 chars)
+        # Short text often lacks burstiness/entropy simply due to brevity, not AI generation.
+        short_text_penalty = 1.0
+        if length < 500:
+            short_text_penalty = 0.8 # Reduce AI probability contribution for short texts
         
         # PPL: Low is AI (<20), High is Human (>80)
         p = metrics.get('perplexity')
         if p is not None:
             # 20 -> 100, 80 -> 0
             s = max(0, min(100, (80 - p) * (100/60)))
-            score += s * 2.5
+            score += s * 2.5 * short_text_penalty
             weight += 2.5
 
         # Burstiness: Low is AI (<0.2), High is Human (>0.5)
@@ -151,7 +157,7 @@ class EnsembleDetector:
         if b is not None:
             # 0.2 -> 100, 0.5 -> 0
             s = max(0, min(100, (0.5 - b) * (100/0.3)))
-            score += s * 2.0
+            score += s * 2.0 * short_text_penalty
             weight += 2.0
 
         # GLTR: High Green is AI (>0.6)

@@ -82,7 +82,11 @@ The `scripts/` directory contains tools for data generation, training, and bench
     ```bash
     python scripts/benchmark_suite.py --n 50
     ```
-*   **Generate Data**: Create adversarial training samples using Gemini (Requires API Key).
+*   **Adversarial Data**: Generate "Humanized" AI samples to train against evasion (Red Teaming).
+    ```bash
+    python scripts/generate_adversarial_data.py
+    ```
+*   **Generate Data**: Create standard synthetic training samples.
     ```bash
     python scripts/generate_training_data.py
     ```
@@ -109,7 +113,7 @@ We maintain a rigorous benchmark suite against state-of-the-art models (Gemini 3
 
 ## 📂 Documentation
 
--   **Theory**: Mathematical underpinnings of [Perplexity](docs/theory/perplexity_theory.md), [Burstiness](docs/theory/burstiness_theory.md), and [GLTR](docs/theory/gltr_theory.md).
+-   **Theory**: Mathematical underpinnings of [Perplexity](docs/theory/perplexity_theory.md), [Burstiness](docs/theory/burstiness_theory.md), [GLTR](docs/theory/gltr_theory.md), and [Adversarial Training](docs/theory/adversarial_training.md).
 
 -   **Practice**: API Guides for [Ensemble](docs/practical/ensemble_guide.md) and [Semantic Analysis](docs/practical/semantic_consistency_guide.md).
 -   **Development**: [Developer Guide (GEMINI.md)](GEMINI.md) - Coding standards, Lazy Loading patterns, and Gemini API best practices.

@@ -16,7 +16,8 @@ dependencies = [
     "google-genai",
     "plotly",
     "joblib",
-    "pydantic"
+    "pydantic",
+    "numpy<2.0.0"
 ]
 
 [tool.setuptools.packages.find]

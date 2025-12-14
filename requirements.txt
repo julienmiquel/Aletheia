@@ -2,7 +2,7 @@ torch
 transformers
 spacy
 scikit-learn
-numpy
+numpy<2.0.0
 tqdm
 pandas
 datasets
