@@ -11,6 +11,20 @@ Aletheia employs a **Red Team / Blue Team** loop to improve detection capabiliti
 ### 1. The Attack (Red Team)
 The `scripts/generate_adversarial_data.py` script acts as an intelligent adversary. It uses a strong LLM (e.g., Gemini Pro) to actively rewrite weak AI content to evade detection.
 
+```mermaid
+sequenceDiagram
+    participant Red as Red Team (Generator)
+    participant Data as Adversarial Data
+    participant Blue as Blue Team (Detector)
+    
+    Red->>Red: Generate 'Weak' AI Text
+    Red->>Red: Apply Evasion Strategy (Burstiness/Typos)
+    Red->>Data: Save 'Humanized' Sample
+    Data->>Blue: Train Ensemble Detector
+    Blue->>Blue: Adjust Decision Boundary
+    Note over Blue: Now recognizes 'Humanized' AI
+```
+
 *   **Step A (Base Generation):** Generate standard AI text (using a lighter model like Gemini Flash). This text typically scores low on perplexity and burstiness.
 *   **Step B (The Disguise):** Prompt a stronger model to *humanize* that text using specific strategies:
     *   **Burstiness Injection:** "Vary sentence length drastically."

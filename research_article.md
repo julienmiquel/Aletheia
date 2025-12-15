@@ -14,6 +14,21 @@ Crucially, **we provide the code**. This article breaks down the implementation 
 ## 2. Methodology & Forensics
 The detector integrates four distinct analytical approaches, mimicking a **Cost-Sensitive Cascade**: we start with cheap statistical metrics and move to expensive semantic analysis only when necessary.
 
+```mermaid
+graph LR
+    Text[Input Text] --> Stats[Statistical Layer]
+    subgraph Stats
+        PPL[Perplexity]
+        Burst[Burstiness]
+        GLTR[GLTR]
+    end
+    Stats --> Ensemble{Meta-Classifier}
+    Ensemble -->|Uncertain?| Semantic[Semantic Layer]
+    Ensemble -->|Certain| Verdict[Final Verdict]
+    Semantic --> Verdict
+    style Semantic fill:#ffe6cc,stroke:#d79b00
+```
+
 ### 2.1 Perplexity (Statistical)
 **Theory**: Measures how predictable a text is to a language model (GPT-2).
 *   **Observation**: AI text typically scores **< 30**, while human text varies widely (**20-100+**).

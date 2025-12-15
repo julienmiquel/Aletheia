@@ -21,6 +21,21 @@ The codebase is organized into a core library and a presentation layer.
     -   **`llm_judge.py`**: Semantic consistency check using Google Gemini.
 -   **`app.py`**: Streamlit-based User Interface.
 
+```mermaid
+classDiagram
+    class Detector {
+        -_model
+        +analyze(text)
+    }
+    class Property {
+        +__get__()
+    }
+    Detector ..> Property : Uses @property
+    Detector --|> LazyLoad : Implements
+    
+    note for Detector "Model is None on init.\nLoaded only when accessed."
+```
+
 ## 3. Technologies
 
 -   **Runtime**: Python 3.12+

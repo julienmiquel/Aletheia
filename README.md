@@ -1,52 +1,108 @@
-# Aletheia: Advanced AI Text Forensics & Detection Framework
+# Aletheia: Digital Forensics for the AI Era
 
 > *Aletheia (Greek: ἀλήθεια) - The state of not being hidden; disclosure; truth.*
-
-**Aletheia** is a PhD-level research framework designed to detect AI-generated text through **multi-modal sensor fusion**. Unlike simple statistical counters, it combines information theory, structural linguistics, and semantic consistency analysis to identify the "watermarks" left by Large Language Model optimization.
 
 ![Status](https://img.shields.io/badge/Status-Research_Preview-orange)
 ![Python](https://img.shields.io/badge/Python-3.12-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
+<video src="docs/Aletheia__The_Digital_Detectives.mp4" controls="controls" style="max-width: 100%;">
+</video>
+
+---
+
+## 🚨 The Declaration
+**Statistical detection is dead.**
+
+For years, we relied on simple metrics—perplexity, burstiness, n-grams—to spot machines. But modern models like **Gemini 3 Pro** and **GPT-4** have learned to mimic these human statistical fingerprints perfectly. They are "bursty," they make "typos," and they optimize against our old detectors.
+
+**Aletheia** is the response to this new reality. It is not just a tool; it is a **forensic framework** designed for a world where "human-like" is no longer proof of humanity. We don't just count words; we interrogate the cognitive integrity of the narrative.
+
+---
+
+## 🛡️ Defense in Depth Strategy
+
+Aletheia operates on a military-grade **Two-Tier Architecture**. We stop the obvious bots at the gate, and we send the detectives after the sophisticated impostors.
+
+### Level 1: The Patrol (Rapid Response)
+*Fast, cheap, and effective against standard bots (ChatGPT 3.5, Llama 2).*
+
+| Sensor           | Theory                | The "Tell"                                                |
+| :--------------- | :-------------------- | :-------------------------------------------------------- |
+| **`Perplexity`** | Information Entropy   | Text is too "smooth" and predictable.                     |
+| **`Burstiness`** | Structural Variance   | Sentence structure is monotonous (flat rhythm).           |
+| **`GLTR`**       | Visual Forensics      | Over-reliance on Top-10 commonly predicted words.         |
+| **`TF-IDF`**     | Stylistic Fingerprint | Abuse of academic "filler" words (*"delve", "tapestry"*). |
+
+### Level 2: The Expert (Semantic Investigation)
+*The heavy artillery. Deployed when statistical metrics are inconclusive.*
+
+| Sensor                    | Theory              | The "Tell"                                                        |
+| :------------------------ | :------------------ | :---------------------------------------------------------------- |
+| **`SemanticConsistency`** | **Meta-Cognition**  | **The Hallucination Loop.** Models lose logical thread over time. |
+| **`LLMJudge`**            | Adversarial Parsing | Lack of specific, verifiable anecdotes; "generic fluff".          |
+
 ---
 
 ## 🔬 The Forensic Architecture
 
-Aletheia operates on the **Condorcet Jury Theorem**: aggregating multiple independent "jurors" (detectors) to maximize verdict reliability.
+We employ a **Stacked Generalization** approach based on the *Condorcet Jury Theorem*: aggregating the verdict of multiple weak learners (The Patrol) with a strong meta-learner (The Expert).
 
-| Detector        | Type                   | Theory                 | Target Artifact                             |
-| :-------------- | :--------------------- | :--------------------- | :------------------------------------------ |
-| **Statistical** | `PerplexityCalculator` | Information Entropy    | Optimization pressure / low surprise.       |
-| **Structural**  | `BurstinessAnalyzer`   | Linguistic Variance    | "Flat" sentence rhythm (RLHF smoothness).   |
-| **Visual**      | `GLTRAnalyzer`         | Rank Distribution      | Dominance of Top-K ("Green") tokens.        |
-| **Stylistic**   | `TfidfDetector`        | N-Gram Frequency       | Generic/Academic "accents" (e.g., "delve"). |
-| **Semantic**    | `SemanticConsistency`  | **Meta-Cognition**     | Context decay & hallucinations. **(New)**   |
-| **Fusion**      | `EnsembleDetector`     | Stacked Generalization | Meta-classification of all signals.         |
-
-➡️ **[Read the Theoretical Frameworks](docs/theory/)**
+```mermaid
+graph TD
+    Input[Input Text] --> L1
+    
+    subgraph L1 [Level 1: The Patrol]
+        P[Perplexity]
+        B[Burstiness]
+        G[GLTR / Visual]
+    end
+    
+    L1 --> Ensemble{Ensemble Check}
+    Ensemble -->|High Confidence| Verdict[Final Verdict]
+    
+    Ensemble -->|Uncertain (Score ~50%)| L2
+    
+    subgraph L2 [Level 2: The Expert]
+        S[Semantic Consistency]
+        L[LLM Judge]
+    end
+    
+    L2 --> Verdict
+    
+    style L1 fill:#e6f3ff,stroke:#333
+    style L2 fill:#ffe6e6,stroke:#f00,stroke-width:2px
+    style S fill:#ffcccc,stroke:#f00
+```
 
 ---
 
-## 🚀 Installation
+## 🕵️‍♂️ Equip the Lab (Installation)
 
-```bash
-git clone https://github.com/julienmiquel/Aletheia.git
-cd aletheia-detector
-pip install -e .
-python -m spacy download en_core_web_sm
-```
+1.  **Clone the Repository**
+    ```bash
+    git clone https://github.com/julienmiquel/Aletheia.git
+    cd aletheia-detector
+    ```
 
-*(Optional)* Create a `.env` file for Semantic Analysis features:
-```bash
-GEMINI_API_KEY=your_key_here
-```
+2.  **Install Dependencies**
+    ```bash
+    pip install -e .
+    python -m spacy download en_core_web_sm
+    ```
+
+3.  **Authorize the Specialist (Optional)**
+    To use Level 2 features (Semantic Analysis), you need a Gemini API key.
+    ```bash
+    export GEMINI_API_KEY="your_api_key_here"
+    ```
 
 ---
 
-## 💻 Usage
+## 🔎 Start an Investigation (Usage)
 
-### 1. The Ensemble (Recommended)
-The `EnsembleDetector` orchestrates all sensors automatically.
+### 1. The Full Autopsy (Ensemble)
+The `EnsembleDetector` automatically manages the escalation from Level 1 to Level 2.
 
 ```python
 from ia_detector.ensemble import EnsembleDetector
@@ -54,77 +110,53 @@ from ia_detector.ensemble import EnsembleDetector
 # Initialize the forensic suite
 detector = EnsembleDetector()
 
-text = "In conclusion, it is important to delve into the tapestry..."
+suspect_text = "In conclusion, it is crucial to delve into..."
 
-# Run analysis (use_semantic=True enables the LLM Judge)
-report = detector.predict(text, use_semantic=True)
+# Run analysis (use_semantic=True authorizes Level 2 escalation)
+evidence = detector.predict(suspect_text, use_semantic=True)
 
-print(f"AI Probability: {report['combined_score']}%")
-print(f"Verdict: {report['verdict']}")
+print(f"Verdict: {evidence['verdict']}")
+print(f"Confidence: {evidence['combined_score']}%")
+if evidence['metrics']['semantic_consistency']:
+    print(f"Logical Flaws Found: {evidence['metrics']['semantic_consistency']}")
 ```
 
-### 2. Streamlit Dashboard (UI)
-The easiest way to use Aletheia:
+### 2. The Visual Dashboard
+For a real-time investigation, launch the interactive command center:
+
 ```bash
+run.sh app
+# or
 streamlit run app.py
 ```
-*Now features **Visual Forensics**: See the "Sea of Green" GLTR visualization with color-coded token highlighting.*
+*Features the **"Sea of Green"** visualization: Watch AI text light up as highly predictable tokens are highlighted in real-time.*
 
-### 3. Command Line Interface
-```bash
-python main.py "Your suspicious text here"
-```
+### 3. Command Line Utilities
+We provide a unified CLI `run.sh` to manage your forensic tools:
 
-### 4. Research & Training Scripts
-The `scripts/` directory contains tools for data generation, training, and benchmarking:
-
-*   **Benchmark Suite**: Evalute detectors on IMDb vs Alpaca/Gemini.
-    ```bash
-    python scripts/benchmark_suite.py --n 50
-    ```
-*   **Adversarial Data**: Generate "Humanized" AI samples to train against evasion (Red Teaming).
-    ```bash
-    python scripts/generate_adversarial_data.py
-    ```
-*   **Generate Data**: Create standard synthetic training samples.
-    ```bash
-    python scripts/generate_training_data.py
-    ```
-*   **Train Ensemble**: Retrain the meta-classifier on new data.
-    ```bash
-    python scripts/train_ensemble.py
-    ```
+*   **`./run.sh adversarial`**: Launch the **Red Team**. Generates "Humanized" AI attacks to test your defenses.
+*   **`./run.sh benchmark`**: Run the full battery of tests against IMDb vs Gemini.
+*   **`./run.sh verify`**: Quick check of the Semantic capabilities.
 
 ---
 
-## 📊 Benchmarks
+## 📁 Case Files (Documentation)
 
-We maintain a rigorous benchmark suite against state-of-the-art models (Gemini 3 Pro, GPT-4).
-
-| Dataset          | Human Baseline | AI Baseline | Detection Rate           |
-| :--------------- | :------------- | :---------- | :----------------------- |
-| **IMDb (Human)** | ~35% Score     | N/A         | **90%** (True Negative)  |
-| **Alpaca (AI)**  | N/A            | ~80% Score  | **100%** (True Positive) |
-| **Gemini 3 Pro** | N/A            | ~65% Score  | **~75%** (Evolving)      |
-
-➡️ **[View Full Benchmark Report](docs/benchmarks/comprehensive_results.md)**
+*   **[The Theory](docs/theory/)**: The mathematical proof behind the methods.
+    *   [Adversarial Training (Red vs Blue)](docs/theory/adversarial_training.md)
+    *   [Semantic Consistency](docs/theory/semantic_consistency_framework.md)
+*   **[Field Manuals](docs/practical/)**: How to tune and deploy detectors.
+*   **[Developer Guide](GEMINI.md)**: Architecture internals and Lazy Loading patterns.
 
 ---
-
-## 📂 Documentation
-
--   **Theory**: Mathematical underpinnings of [Perplexity](docs/theory/perplexity_theory.md), [Burstiness](docs/theory/burstiness_theory.md), [GLTR](docs/theory/gltr_theory.md), and [Adversarial Training](docs/theory/adversarial_training.md).
-
--   **Practice**: API Guides for [Ensemble](docs/practical/ensemble_guide.md) and [Semantic Analysis](docs/practical/semantic_consistency_guide.md).
--   **Development**: [Developer Guide (GEMINI.md)](GEMINI.md) - Coding standards, Lazy Loading patterns, and Gemini API best practices.
 
 ## 📜 Citation
 
-If you use Aletheia in your research, please cite the repository:
+If Aletheia helps your investigation, please cite the framework:
 ```
 @software{aletheia2025,
   author = {Miquel, Julien},
-  title = {Aletheia: Multi-Modal AI Text Detection Framework},
+  title = {Aletheia: Digital Forensics Framework for AI Detection},
   year = {2025},
   url = {https://github.com/julienmiquel/Aletheia}
 }
