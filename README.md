@@ -6,7 +6,7 @@
 ![Python](https://img.shields.io/badge/Python-3.12-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
-[![Watch Mission Briefing](docs/video_thumbnail.png)](https://youtu.be/Y8EHyhkmRsk)
+[![Watch Mission Briefing](docs/mission_briefing.gif)](https://youtu.be/Y8EHyhkmRsk)
 
 ---
 
