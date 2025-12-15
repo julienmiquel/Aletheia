@@ -6,8 +6,7 @@
 ![Python](https://img.shields.io/badge/Python-3.12-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
-<video src="docs/Aletheia__The_Digital_Detectives.mp4" controls="controls" style="max-width: 100%;">
-</video>
+[![Watch Mission Briefing](docs/video_thumbnail.png)](https://youtu.be/Y8EHyhkmRsk)
 
 ---
 
@@ -61,7 +60,7 @@ graph TD
     L1 --> Ensemble{Ensemble Check}
     Ensemble -->|High Confidence| Verdict[Final Verdict]
     
-    Ensemble -->|Uncertain (Score ~50%)| L2
+    Ensemble -->|"Uncertain (Score ~50%)"| L2
     
     subgraph L2 [Level 2: The Expert]
         S[Semantic Consistency]
