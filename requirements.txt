@@ -11,3 +11,6 @@ python-dotenv
 pytest
 streamlit
 plotly
+sentence-transformers
+markllm
+binoculars
