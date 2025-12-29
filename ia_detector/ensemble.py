@@ -6,6 +6,9 @@ from ia_detector.perplexity import PerplexityCalculator
 from ia_detector.burstiness import BurstinessAnalyzer
 from ia_detector.gltr import GLTRAnalyzer
 from ia_detector.features import TfidfDetector
+from ia_detector.structural import StructuralAnalyzer
+from ia_detector.surrogate_ppl import SurrogatePPLDetector
+from ia_detector.vector_style import VectorStyleAnalyzer
 from ia_detector.llm_judge import LLMJudge
 from ia_detector.semantic_consistency import SemanticConsistencyAnalyzer
 from ia_detector import config
@@ -32,6 +35,11 @@ class EnsembleDetector:
         print("Ensemble: Initializing TF-IDF...")
         self.tfidf_detector = TfidfDetector()
         
+        print("Ensemble: Initializing Structural & Neural Detectors...")
+        self.structural_calc = StructuralAnalyzer()
+        self.surrogate_ppl_calc = SurrogatePPLDetector()
+        self.vector_style_calc = VectorStyleAnalyzer()
+
         # Semantic Models (Optional/Costly)
         print("Ensemble: Initializing Semantic Models (Lazy load)...")
         self.llm_judge = LLMJudge()
@@ -89,7 +97,31 @@ class EnsembleDetector:
             metrics['tfidf_prob'] = tfidf_res.get('ai_probability')
         except: metrics['tfidf_prob'] = None
 
-        # 5. Semantic (Optional)
+        # 5. Structural Syntax (Phase 2)
+        try:
+            struct_res = self.structural_calc.analyze(text)
+            metrics['avg_tree_depth'] = struct_res.get('avg_tree_depth')
+            metrics['max_tree_depth'] = struct_res.get('max_tree_depth')
+        except:
+            metrics['avg_tree_depth'] = None
+            metrics['max_tree_depth'] = None
+
+        # 6. Surrogate PPL (Phase 2)
+        try:
+            # Only run if we are doing a deep scan or if configured
+            surr_res = self.surrogate_ppl_calc.analyze(text)
+            metrics['surrogate_ppl_score'] = surr_res.get('surrogate_ppl_score')
+        except:
+            metrics['surrogate_ppl_score'] = None
+
+        # 7. Vector Style (Phase 2)
+        try:
+            vec_res = self.vector_style_calc.analyze(text)
+            metrics['avg_coherence'] = vec_res.get('avg_coherence')
+        except:
+            metrics['avg_coherence'] = None
+
+        # 8. Semantic (Optional)
         metrics['semantic_consistency'] = None
         metrics['llm_judge_score'] = None
         if use_semantic:
@@ -174,6 +206,31 @@ class EnsembleDetector:
             score += t * 100 * 3.0 # Strongest stylistic signal
             weight += 3.0
             
+        # Structural: High tree depth = Human
+        sd = metrics.get('avg_tree_depth')
+        if sd is not None:
+            # Heuristic: Human ~5+, AI ~3-4
+            s = max(0, min(100, (5 - sd) * (100/2)))
+            score += s * 1.5
+            weight += 1.5
+
+        # Surrogate PPL: > 0 is AI
+        sp = metrics.get('surrogate_ppl_score')
+        if sp is not None:
+            if sp > 0:
+                score += 100 * 2.0
+            else:
+                score += 0
+            weight += 2.0
+
+        # Vector Style: High coherence = AI (monotonous)
+        vc = metrics.get('avg_coherence')
+        if vc is not None:
+            # AI > 0.5, Human < 0.4 usually
+            s = max(0, min(100, (vc - 0.3) * (100/0.4)))
+            score += s * 1.5
+            weight += 1.5
+
         # Semantic: High Consistent is Human (100 -> 0% AI), Low is AI (0 -> 100% AI)
         s = metrics.get('semantic_consistency')
         if s is not None:
