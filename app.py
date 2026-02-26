@@ -3,6 +3,7 @@ import time
 import os
 import plotly.graph_objects as go
 import pandas as pd
+import html  # Added for security
 
 # Set page config
 st.set_page_config(
@@ -182,12 +183,16 @@ if analyze_btn and text_input:
                 token = item['token']
                 # Clean up GPT-2 tokens (remove Ġ)
                 display_token = token.replace('Ġ', ' ')
+
+                # ESCAPE HTML FOR SECURITY
+                safe_token = html.escape(display_token)
+
                 bg_color = colors.get(item['bucket'], "#ffffff")
                 
                 # Tooltip with Rank
                 tooltip = f"Rank: {item['rank']} | Prob: {item['prob']:.4f}"
                 
-                html_content += f"<span style='background-color: {bg_color}; padding: 2px 4px; margin: 0 2px; border-radius: 4px;' title='{tooltip}'>{display_token}</span>"
+                html_content += f"<span style='background-color: {bg_color}; padding: 2px 4px; margin: 0 2px; border-radius: 4px;' title='{tooltip}'>{safe_token}</span>"
             
             html_content += "</div>"
             st.markdown(html_content, unsafe_allow_html=True)
