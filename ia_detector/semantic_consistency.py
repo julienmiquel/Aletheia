@@ -109,7 +109,42 @@ class SemanticConsistencyAnalyzer:
                 "coherence_metric": coherence_score
             }
 
-            prompt = DEFAULT_SEMANTIC_PROMPT.format(text=text[:4000])
+        if self.prompt_template:
+            # Use custom prompt template
+            if "{text}" in self.prompt_template:
+                try:
+                    prompt = self.prompt_template.format(text=text[:4000])
+                except Exception:
+                     # Fallback if format fails for other reasons
+                    prompt = self.prompt_template + "\n\n" + text[:4000]
+            else:
+                # Append text if placeholder is missing
+                prompt = self.prompt_template + "\n\n" + text[:4000]
+        else:
+            # Default prompt
+            prompt = f"""
+            You are an expert AI forensics analyst. Analyze the following text for internal logical consistency and "hallucination-like" patterns.
+
+            AI-generated text, while grammatically correct, often contains subtle logical contradictions or "dream-like" shifts in narrative availability. Human text is usually grounded in a consistent reality.
+
+            Task:
+            1. Identify any internal contradictions (e.g., "The car was red" then later "The blue car").
+            2. Identify specific, verifiable details vs. generic "fluff".
+            3. Rate the "Semantic Consistency" from 0 to 100.
+            - 0: Highly inconsistent, contains obvious contradictions (Likely AI Hallucination).
+            - 100: Perfectly consistent, grounded, and logical (Likely Human).
+
+            Text to Analyze:
+            -----
+            {text[:4000]}
+            -----
+
+            Provide your response in JSON format:
+            {{
+                "reasoning": "Concise explanation of found inconsistencies or confirmation of consistency.",
+                "consistency_score": <int 0-100>
+            }}
+            """
 
         llm_score = 50
         reasoning = "Analysis Failed."

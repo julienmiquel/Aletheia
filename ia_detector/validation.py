@@ -77,9 +77,7 @@ class ExperimentRunner:
                 elif hasattr(detector, 'analyze'):
                     output = detector.analyze(example.text)
                     # SemanticConsistencyAnalyzer returns 'consistency_score' (0=AI, 100=Human)
-                    # Normalize to the same scale as LLMJudge (higher = more AI-like)
-                    consistency_score = output.get('consistency_score', 50)
-                    score = 100 - consistency_score
+                    score = output.get('consistency_score', 50)
                 else:
                     raise ValueError(f"Detector {detector_class.__name__} does not have evaluate or analyze method")
 
