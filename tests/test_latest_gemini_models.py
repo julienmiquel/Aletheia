@@ -1,5 +1,6 @@
 import unittest
 import os
+from google import genai
 from ia_detector.llm_judge import LLMJudge
 from ia_detector.semantic_consistency import SemanticConsistencyAnalyzer
 
@@ -10,11 +11,25 @@ class TestLatestGeminiModels(unittest.TestCase):
         if not self.api_key:
             self.skipTest("Skipping Integration Test: GEMINI_API_KEY not found.")
 
-        self.models_to_test = [
-            "gemini-1.5-pro-002",
-            "gemini-1.5-flash-002",
-            "gemini-1.5-flash-8b"
-        ]
+        # Dynamically fetch models and filter out 1.5 versions
+        try:
+            client = genai.Client(api_key=self.api_key)
+            all_models = list(client.models.list())
+
+            # Filter logic: Must contain 'gemini' and NOT contain '1.5'
+            self.models_to_test = [
+                m.name for m in all_models
+                if "gemini" in m.name.lower() and "1.5" not in m.name
+            ]
+
+            # Fallback if list is empty or API fails (e.g. for unit testing without net)
+            if not self.models_to_test:
+                print("Warning: No non-1.5 Gemini models found via API. Using fallback list.")
+                self.models_to_test = ["gemini-2.0-flash-exp", "gemini-2.0-pro-exp"]
+
+        except Exception as e:
+            print(f"Warning: Failed to list models: {e}. Using fallback list.")
+            self.models_to_test = ["gemini-2.0-flash-exp", "gemini-2.0-pro-exp"]
 
     def test_llm_judge_models(self):
         for model in self.models_to_test:

@@ -12,7 +12,7 @@ from ia_detector.semantic_consistency import SemanticConsistencyAnalyzer
 
 def main():
     parser = argparse.ArgumentParser(description="Run validation benchmark for Aletheia models.")
-    parser.add_argument("--model", type=str, default="gemini-1.5-pro-002", help="Model name to test")
+    parser.add_argument("--model", type=str, default="gemini-2.0-flash-exp", help="Model name to test")
     parser.add_argument("--detector", type=str, choices=["llm_judge", "semantic"], default="llm_judge", help="Detector to test")
     parser.add_argument("--dataset", type=str, help="Path to dataset JSON file")
     parser.add_argument("--output", type=str, default="benchmark_results.json", help="Path to output JSON file")
