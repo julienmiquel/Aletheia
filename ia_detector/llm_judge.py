@@ -4,12 +4,18 @@ from google import genai
 from google.genai import types
 
 class LLMJudge:
-    def __init__(self, model_name="gemini-3-pro-preview"):
+    def __init__(self, model_name="gemini-3-pro-preview", prompt_template=None, generation_config=None):
         """
         Initializes the LLM Judge using Google GenAI.
+        Args:
+            model_name (str): The name of the Gemini model to use.
+            prompt_template (str, optional): A template string with a `{text}` placeholder.
+            generation_config (dict, optional): Configuration for generation (temperature, etc.).
         """
         self.client = self._get_client()
         self.model_name = model_name
+        self.prompt_template = prompt_template
+        self.generation_config = generation_config
 
     def _get_client(self):
         """
@@ -52,34 +58,52 @@ class LLMJudge:
         if not self.client:
             return {"score": 50, "reasoning": "LLM Judge not initialized (No credentials)."}
 
-        prompt = f"""
-        You are an expert AI text forensics analyst. Your task is to determine if the following text was written by a Human or an AI.
-        
-        Analyze the text for:
-        1. Absence of personal nuance or specific, verifiable anecdotes.
-        2. Excessive "balance" or lack of strong opinion.
-        3. Repetitive sentence structures (low burstiness).
-        4. Overuse of transition words (e.g., "Furthermore", "In conclusion").
-        5. "Hallucination-like" generic statements.
+        if self.prompt_template:
+            # Use custom prompt template
+            if "{text}" in self.prompt_template:
+                try:
+                    prompt = self.prompt_template.format(text=text[:4000])
+                except Exception:
+                     # Fallback if format fails for other reasons
+                    prompt = self.prompt_template + "\n\n" + text[:4000]
+            else:
+                # Append text if placeholder is missing
+                prompt = self.prompt_template + "\n\n" + text[:4000]
+        else:
+            # Default prompt
+            prompt = f"""
+            You are an expert AI text forensics analyst. Your task is to determine if the following text was written by a Human or an AI.
 
-        Text to Analyze:
-        -----
-        {text[:4000]} 
-        -----
-        
-        Provide your analysis in JSON format with two keys:
-        - "reasoning": A concise explanation of your findings.
-        - "ai_probability": A score from 0 to 100, where 0 is definitely Human and 100 is definitely AI.
-        """
+            Analyze the text for:
+            1. Absence of personal nuance or specific, verifiable anecdotes.
+            2. Excessive "balance" or lack of strong opinion.
+            3. Repetitive sentence structures (low burstiness).
+            4. Overuse of transition words (e.g., "Furthermore", "In conclusion").
+            5. "Hallucination-like" generic statements.
+
+            Text to Analyze:
+            -----
+            {text[:4000]}
+            -----
+
+            Provide your analysis in JSON format with two keys:
+            - "reasoning": A concise explanation of your findings.
+            - "ai_probability": A score from 0 to 100, where 0 is definitely Human and 100 is definitely AI.
+            """
+
+        # Merge default config with user config
+        config_params = {
+            "response_mime_type": "application/json",
+            "temperature": 0.1
+        }
+        if self.generation_config:
+            config_params.update(self.generation_config)
 
         try:
             response = self.client.models.generate_content(
                 model=self.model_name,
                 contents=prompt,
-                config=types.GenerateContentConfig(
-                    response_mime_type="application/json",
-                    temperature=0.1
-                )
+                config=types.GenerateContentConfig(**config_params)
             )
             
             if response.text:

@@ -4,12 +4,18 @@ from google import genai
 from google.genai import types
 
 class SemanticConsistencyAnalyzer:
-    def __init__(self, model_name="gemini-3-pro-preview"):
+    def __init__(self, model_name="gemini-3-pro-preview", prompt_template=None, generation_config=None):
         """
         Initializes the Semantic Consistency Analyzer using Google GenAI.
+        Args:
+            model_name (str): The name of the Gemini model to use.
+            prompt_template (str, optional): A template string with a `{text}` placeholder.
+            generation_config (dict, optional): Configuration for generation (temperature, etc.).
         """
         self.client = self._get_client()
         self.model_name = model_name
+        self.prompt_template = prompt_template
+        self.generation_config = generation_config
 
     def _get_client(self):
         """
@@ -103,41 +109,59 @@ class SemanticConsistencyAnalyzer:
                 "coherence_metric": coherence_score
             }
 
-        prompt = f"""
-        You are an expert AI forensics analyst. Analyze the following text for internal logical consistency and "hallucination-like" patterns.
-        
-        AI-generated text, while grammatically correct, often contains subtle logical contradictions or "dream-like" shifts in narrative availability. Human text is usually grounded in a consistent reality.
-        
-        Task:
-        1. Identify any internal contradictions (e.g., "The car was red" then later "The blue car").
-        2. Identify specific, verifiable details vs. generic "fluff".
-        3. Rate the "Semantic Consistency" from 0 to 100.
-           - 0: Highly inconsistent, contains obvious contradictions (Likely AI Hallucination).
-           - 100: Perfectly consistent, grounded, and logical (Likely Human).
-           
-        Text to Analyze:
-        -----
-        {text[:4000]}
-        -----
-        
-        Provide your response in JSON format:
-        {{
-            "reasoning": "Concise explanation of found inconsistencies or confirmation of consistency.",
-            "consistency_score": <int 0-100>
-        }}
-        """
+        if self.prompt_template:
+            # Use custom prompt template
+            if "{text}" in self.prompt_template:
+                try:
+                    prompt = self.prompt_template.format(text=text[:4000])
+                except Exception:
+                     # Fallback if format fails for other reasons
+                    prompt = self.prompt_template + "\n\n" + text[:4000]
+            else:
+                # Append text if placeholder is missing
+                prompt = self.prompt_template + "\n\n" + text[:4000]
+        else:
+            # Default prompt
+            prompt = f"""
+            You are an expert AI forensics analyst. Analyze the following text for internal logical consistency and "hallucination-like" patterns.
+
+            AI-generated text, while grammatically correct, often contains subtle logical contradictions or "dream-like" shifts in narrative availability. Human text is usually grounded in a consistent reality.
+
+            Task:
+            1. Identify any internal contradictions (e.g., "The car was red" then later "The blue car").
+            2. Identify specific, verifiable details vs. generic "fluff".
+            3. Rate the "Semantic Consistency" from 0 to 100.
+            - 0: Highly inconsistent, contains obvious contradictions (Likely AI Hallucination).
+            - 100: Perfectly consistent, grounded, and logical (Likely Human).
+
+            Text to Analyze:
+            -----
+            {text[:4000]}
+            -----
+
+            Provide your response in JSON format:
+            {{
+                "reasoning": "Concise explanation of found inconsistencies or confirmation of consistency.",
+                "consistency_score": <int 0-100>
+            }}
+            """
 
         llm_score = 50
         reasoning = "Analysis Failed."
+
+        # Merge default config with user config
+        config_params = {
+            "response_mime_type": "application/json",
+            "temperature": 0.1
+        }
+        if self.generation_config:
+            config_params.update(self.generation_config)
 
         try:
             response = self.client.models.generate_content(
                 model=self.model_name,
                 contents=prompt,
-                config=types.GenerateContentConfig(
-                    response_mime_type="application/json",
-                    temperature=0.1
-                )
+                config=types.GenerateContentConfig(**config_params)
             )
             
             if response.text:
