@@ -3,6 +3,7 @@ import time
 import os
 import plotly.graph_objects as go
 import pandas as pd
+import html
 
 # Set page config
 st.set_page_config(
@@ -182,6 +183,10 @@ if analyze_btn and text_input:
                 token = item['token']
                 # Clean up GPT-2 tokens (remove Ġ)
                 display_token = token.replace('Ġ', ' ')
+
+                # Sanitize token to prevent XSS
+                display_token = html.escape(display_token)
+
                 bg_color = colors.get(item['bucket'], "#ffffff")
                 
                 # Tooltip with Rank
