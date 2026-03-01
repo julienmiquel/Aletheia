@@ -69,7 +69,7 @@ def load_detector():
 st.markdown("<h1 class='main-header'>Aletheia: AI Text Forensics</h1>", unsafe_allow_html=True)
 
 # Input
-text_input = st.text_area("Analysis Target", placeholder="Paste suspicious text here...", height=200)
+text_input = st.text_area("Analysis Target", placeholder="Paste suspicious text here...", height=200, max_chars=10000)
 
 col1, col2, col3 = st.columns([1,1,1])
 with col2:
