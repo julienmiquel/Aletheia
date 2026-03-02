@@ -16,7 +16,7 @@ from ia_detector.vertex_metrics import aletheia_ai_score
 def run_evaluation():
     # 1. Load Data
     data_path = config.DATA_DIR / "adversarial_samples.json"
-    if not os.path.exists(data_path):
+    if not data_path.exists():
         print(f"Error: {data_path} not found. Please run scripts/generate_adversarial_data.py first.")
         return
 
