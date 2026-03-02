@@ -43,7 +43,7 @@ class AletheiaMetric:
 # Singleton instance to avoid reloading models for every row if the framework re-imports
 _aletheia_instance = None
 
-def aletheia_ai_score(row):
+def aletheia_ai_score(row: Union[Dict, str]) -> float:
     """
     Functional interface for the metric.
     """
