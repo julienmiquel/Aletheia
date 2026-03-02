@@ -197,6 +197,12 @@ def main():
         print("Error: Empty input.")
         sys.exit(1)
         
+    # Enforce maximum character limit to prevent DoS (Denial of Service) via expensive NLP operations
+    MAX_CHARS = 10000
+    if len(input_text) > MAX_CHARS:
+        print(f"Warning: Input text exceeds {MAX_CHARS} characters. Truncating to prevent resource exhaustion.")
+        input_text = input_text[:MAX_CHARS]
+
     analyze_text(input_text, args)
 
 if __name__ == "__main__":
