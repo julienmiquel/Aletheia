@@ -37,8 +37,8 @@ class AletheiaMetric:
             result = self.detector.predict(text, use_semantic=False)
             return result.get("combined_score", 0.0)
         except Exception as e:
-            print(f"AletheiaMetric Error: {e}")
-            return 0.0
+            logging.error(f"AletheiaMetric Error: {e}", exc_info=True)
+            return float('nan')
 
 # Singleton instance to avoid reloading models for every row if the framework re-imports
 _aletheia_instance = None
