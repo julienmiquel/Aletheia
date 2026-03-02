@@ -49,7 +49,9 @@ def aletheia_ai_score(row):
     """
     global _aletheia_instance
     if _aletheia_instance is None:
-        _aletheia_instance = AletheiaMetric()
+        with _aletheia_lock:
+            if _aletheia_instance is None:
+                _aletheia_instance = AletheiaMetric()
 
     # Vertex AI Eval often passes 'response' as a string OR as a dict,
     # but the custom metric signature is typically (row: dict) -> float
