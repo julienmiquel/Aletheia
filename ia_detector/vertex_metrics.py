@@ -7,7 +7,7 @@ class AletheiaMetric:
     """
     def __init__(self):
         # Initialize the detector once
-        print("Initializing Aletheia EnsembleDetector for Vertex Eval...")
+        logging.info("Initializing Aletheia EnsembleDetector for Vertex Eval...")
         self.detector = EnsembleDetector()
 
     def score(self, row):
