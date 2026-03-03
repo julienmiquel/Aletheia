@@ -122,7 +122,8 @@ if analyze_btn and text_input:
             st.plotly_chart(fig, use_container_width=True)
             
             verdict_class = "verdict-ai" if verdict == "AI" else "verdict-human"
-            st.markdown(f"<div style='text-align: center;'><span class='{verdict_class}'>{verdict.upper()}</span></div>", unsafe_allow_html=True)
+            safe_verdict = html.escape(verdict.upper())
+            st.markdown(f"<div style='text-align: center;'><span class='{verdict_class}'>{safe_verdict}</span></div>", unsafe_allow_html=True)
 
         st.markdown("---")
 
