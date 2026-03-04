@@ -35,6 +35,6 @@ class ResultCache:
             print(f"Cache Write Error: {e}")
         
     def _make_key(self, text, metric_name):
-        # Hash text to avoid huge keys
-        h = hashlib.md5(text.encode('utf-8')).hexdigest()
+        # Hash text to avoid huge keys using a secure hash
+        h = hashlib.sha256(text.encode('utf-8')).hexdigest()
         return f"{metric_name}:{h}"

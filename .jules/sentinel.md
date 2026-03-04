@@ -1,3 +1,8 @@
+## 2025-03-05 - Weak Hash Algorithm (MD5) for Cache Keys
+**Vulnerability:** The application used `hashlib.md5()` to generate keys for cached analysis results, creating a risk of hash collision attacks and violating secure coding standards for cryptographic hashing.
+**Learning:** Even for non-cryptographic purposes like cache keys, using explicitly weak algorithms like MD5 can trigger security alerts, introduce theoretical collision risks with adversarial input, and fail compliance checks.
+**Prevention:** Use a cryptographically secure hash function like SHA-256 (`hashlib.sha256()`) by default for all hashing needs, even cache keys, unless performance requirements strictly necessitate a non-cryptographic hash (like MurmurHash or cityhash).
+
 ## 2025-02-28 - Missing Input Length Limits (DoS Risk)
 **Vulnerability:** The application accepted unbounded text inputs for expensive analysis (Perplexity, Neural inference, LLM evaluation).
 **Learning:** Accepting arbitrarily long text strings in NLP forensic tools poses a Denial of Service (DoS) risk, as it allows attackers to consume excessive CPU, memory, and API resources.
