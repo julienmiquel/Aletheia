@@ -14,3 +14,9 @@ plotly
 sentence-transformers
 markllm
 binoculars
+google-cloud-storage
+google-cloud-bigquery
+firebase-admin
+db-dtypes
+google-cloud-aiplatform
+pandas-gbq

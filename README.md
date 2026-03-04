@@ -137,6 +137,26 @@ We provide a unified CLI `run.sh` to manage your forensic tools:
 *   **`./run.sh benchmark`**: Run the full battery of tests against IMDb vs Gemini.
 *   **`./run.sh verify`**: Quick check of the Semantic capabilities.
 
+## 🚀 Deployment and Automation
+
+Aletheia includes configurations for deploying its services and running benchmarks via Google Cloud.
+
+### Manual Cloud Build Trigger Setup
+
+To automatically run the test suite (`pytest`) on every push to the `main` branch, you can set up a Google Cloud Build Trigger manually:
+
+1.  Navigate to the **Cloud Build Triggers** page in the Google Cloud Console.
+2.  Click **Create Trigger**.
+3.  **Name**: Give your trigger a name (e.g., `aletheia-benchmark-trigger`).
+4.  **Event**: Select **Push to a branch**.
+5.  **Source**: Connect your repository and select it.
+6.  **Branch**: Enter `^main$` to trigger only on pushes to the main branch.
+7.  **Configuration**: Select **Cloud Build configuration file (yaml or json)**.
+8.  **Location**: Specify `cloudbuild.yaml` (this file is provided in the repository root).
+9.  Click **Create**.
+
+Alternatively, you can deploy this trigger using the provided Terraform configuration located in the `terraform/` directory.
+
 ---
 
 ## 📁 Case Files (Documentation)
