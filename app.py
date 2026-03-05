@@ -79,15 +79,20 @@ if analyze_btn and text_input:
     if len(text_input) < 50:
         st.warning("Text is too short for reliable analysis. Please provide at least 50 characters.")
     else:
-        with st.spinner("Initializing Forensic Sensors..."):
-            detector = load_detector()
-            
-        with st.spinner("Analyzing Signals (Perplexity, Burstiness, GLTR...)"):
-            start_time = time.time()
-            result = detector.predict(text_input, use_semantic=use_semantic)
-            elapsed = time.time() - start_time
-            
-        st.success(f"Analysis complete in {elapsed:.2f}s")
+        try:
+            with st.spinner("Initializing Forensic Sensors..."):
+                detector = load_detector()
+
+            with st.spinner("Analyzing Signals (Perplexity, Burstiness, GLTR...)"):
+                start_time = time.time()
+                result = detector.predict(text_input, use_semantic=use_semantic)
+                elapsed = time.time() - start_time
+
+            st.success(f"Analysis complete in {elapsed:.2f}s")
+        except Exception as e:
+            st.error("An unexpected error occurred during analysis. Please try again later.")
+            print(f"Analysis Error: {e}")
+            st.stop()
         
         # ---------------------------------------------------------
         # Results Dashboard
