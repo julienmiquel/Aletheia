@@ -4,6 +4,7 @@ import os
 import plotly.graph_objects as go
 import pandas as pd
 import html
+import logging
 
 # Set page config
 st.set_page_config(
@@ -76,6 +77,9 @@ with col2:
     analyze_btn = st.button("Analyze Text", type="primary", use_container_width=True)
 
 if analyze_btn and text_input:
+    if len(text_input) > 10000:
+        st.error("Text exceeds maximum length of 10,000 characters.")
+        st.stop()
     if len(text_input) < 50:
         st.warning("Text is too short for reliable analysis. Please provide at least 50 characters.")
     else:
