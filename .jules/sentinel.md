@@ -17,3 +17,8 @@
 **Vulnerability:** The Streamlit application did not catch exceptions during deep analysis (e.g., `detector.predict()`), leading to raw Python stack traces being displayed directly in the user interface.
 **Learning:** In Streamlit applications, unhandled exceptions render detailed stack traces in the browser, which can leak sensitive internal paths, logic, and environment details.
 **Prevention:** Always wrap critical or external logic in a `try...except` block in Streamlit apps. Use `st.error()` to display a generic user-friendly message, log the actual error securely (e.g., `print(e)` or standard logging), and halt further problematic execution (e.g., using `st.stop()`).
+
+## 2025-03-10 - Prompt Injection in LLM Evaluators
+**Vulnerability:** LLM evaluators (`LLMJudge`, `SemanticConsistencyAnalyzer`) incorporated untrusted user input directly into prompts without robust delimiters or explicit instructions, making them vulnerable to prompt injection attacks where malicious text could override system instructions.
+**Learning:** In LLM applications, user input must be strictly isolated from instructions. Merely appending user text is insufficient protection against prompt injection.
+**Prevention:** To prevent prompt injection vulnerabilities, wrap untrusted user input in explicit XML delimiters like `<text_to_analyze>` and strictly instruct the model to analyze only the enclosed content as data, ignoring embedded commands.
