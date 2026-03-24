@@ -6,17 +6,23 @@ import os
 from ia_detector import config
 
 class TfidfDetector:
+    # Class-level cache to avoid redundant loading across instances
+    _model_cache = {}
+
     def __init__(self, model_path=config.TFIDF_MODEL_PATH):
         """
         Initializes the TF-IDF Detector. Model is loaded lazily.
         """
-        self.model_path = model_path
+        self.model_path = str(model_path) # Ensure path is a string for dict key
         self._pipeline = None
 
     @property
     def pipeline(self):
         if self._pipeline is None:
-            if os.path.exists(self.model_path):
+            # Check class-level cache first
+            if self.model_path in TfidfDetector._model_cache:
+                self._pipeline = TfidfDetector._model_cache[self.model_path]
+            elif os.path.exists(self.model_path):
                 self.load(self.model_path)
             else:
                 # If no model exists, return None or handle appropriately
@@ -44,6 +50,9 @@ class TfidfDetector:
         
         print("Training TF-IDF Detector...")
         self._pipeline.fit(corpus, labels)
+
+        # Update class-level cache
+        TfidfDetector._model_cache[self.model_path] = self._pipeline
         print("Training complete.")
 
     def predict(self, text):
@@ -75,9 +84,13 @@ class TfidfDetector:
     def load(self, path=None):
         if path is None:
             path = self.model_path
+        path = str(path)
         if os.path.exists(path):
             with open(path, 'rb') as f:
-                self._pipeline = pickle.load(f)
+                pipeline = pickle.load(f)
+                self._pipeline = pipeline
+                # Update class-level cache
+                TfidfDetector._model_cache[path] = pipeline
             print(f"Model loaded from {path}")
         else:
              print(f"Model file {path} not found.")
