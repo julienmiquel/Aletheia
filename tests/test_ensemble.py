@@ -44,11 +44,12 @@ class TestEnsemble(unittest.TestCase):
         """Test heuristic logic for Likely AI text."""
         # Configure Mocks for "AI" signals
         self.mock_ppl.calculate.return_value = 15 # Low PPL -> AI
-        self.mock_burst.analyze.return_value = 0.1 # Low Burst -> AI (handling raw float return just in case, logic handles dict)
-        # Fix mock to match expected dict return for burstiness if logic expects dict
-        # Actually my code does: self.burst_calc.analyze(text).get('burstiness_coefficient')
-        # So I must return a dict
-        self.mock_burst.analyze.return_value = {'burstiness_coefficient': 0.1}
+
+        # Burstiness must return a dict
+        self.mock_burst.analyze.return_value = {
+            'burstiness_coefficient': 0.1,
+            'lexical_entropy': 0.1
+        }
         
         self.mock_gltr.get_fraction_clean.return_value = {'Green': 0.8} # High Green -> AI
         self.mock_tfidf.predict.return_value = {'ai_probability': 0.9} # High Prob -> AI
