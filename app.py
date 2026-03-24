@@ -160,7 +160,7 @@ if analyze_btn and text_input:
             green = metrics.get('gltr_green', 0)
             st.metric("GLTR Green %", f"{green*100:.1f}%", delta="High = AI", delta_color="inverse", help="Percentage of words that are in the Top-10 expected predictions. High means the text follows the 'most likely' path.")
             st.markdown(get_interpretation(green or 0, 0.6, True))
-            st.progress(min(1.0, green))
+            st.progress(min(1.0, green or 0))
             
         with m_col4:
             tfidf = metrics.get('tfidf_prob', 0)
