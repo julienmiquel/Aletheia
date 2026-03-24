@@ -148,7 +148,7 @@ if analyze_btn and text_input:
             ppl = metrics.get('perplexity', 0)
             st.metric("Perplexity", f"{ppl:.1f}", delta="Low = AI", delta_color="inverse", help="Measures how 'surprised' a model is by the text. AI text is very low perplexity (predictable).")
             st.markdown(get_interpretation(ppl or 0, 40, False))
-            st.progress(min(100, int(ppl))/100) # Simple visual, capped at 100
+            st.progress(min(100, int(ppl or 0))/100) # Simple visual, capped at 100
             
         with m_col2:
             burst = metrics.get('burstiness', 0)
