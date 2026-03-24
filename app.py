@@ -147,26 +147,26 @@ if analyze_btn and text_input:
         with m_col1:
             ppl = metrics.get('perplexity', 0)
             st.metric("Perplexity", f"{ppl:.1f}", delta="Low = AI", delta_color="inverse", help="Measures how 'surprised' a model is by the text. AI text is very low perplexity (predictable).")
-            st.markdown(get_interpretation(ppl, 40, False))
-            st.progress(min(100, int(ppl))/100) # Simple visual, capped at 100
+            st.markdown(get_interpretation(ppl or 0, 40, False))
+            st.progress(min(100, int(ppl or 0))/100) # Simple visual, capped at 100
             
         with m_col2:
             burst = metrics.get('burstiness', 0)
             st.metric("Burstiness", f"{burst:.3f}", delta="Low = AI", delta_color="inverse", help="Measures the variation in sentence structure. AI text is monotone (low burstiness).")
-            st.markdown(get_interpretation(burst, 0.4, False))
+            st.markdown(get_interpretation(burst or 0, 0.4, False))
             st.progress(min(1.0, burst))
             
         with m_col3:
             green = metrics.get('gltr_green', 0)
             st.metric("GLTR Green %", f"{green*100:.1f}%", delta="High = AI", delta_color="inverse", help="Percentage of words that are in the Top-10 expected predictions. High means the text follows the 'most likely' path.")
-            st.markdown(get_interpretation(green, 0.6, True))
-            st.progress(min(1.0, green))
+            st.markdown(get_interpretation(green or 0, 0.6, True))
+            st.progress(min(1.0, green or 0))
             
         with m_col4:
             tfidf = metrics.get('tfidf_prob', 0)
-            st.metric("Stylistic Match", f"{tfidf*100:.1f}%", delta="High = AI", delta_color="inverse", help="Probability that the writing style matches known AI artifacts (e.g. overused transition words).")
-            st.markdown(get_interpretation(tfidf, 0.5, True))
-            st.progress(min(1.0, tfidf))
+            st.metric("Stylistic Match", f"{(tfidf or 0)*100:.1f}%", delta="High = AI", delta_color="inverse", help="Probability that the writing style matches known AI artifacts (e.g. overused transition words).")
+            st.markdown(get_interpretation(tfidf or 0, 0.5, True))
+            st.progress(min(1.0, tfidf or 0))
 
         # ---------------------------------------------------------
         # Visual Forensics (GLTR)
@@ -198,7 +198,7 @@ if analyze_btn and text_input:
                 # Tooltip with Rank
                 tooltip = f"Rank: {item['rank']} | Prob: {item['prob']:.4f}"
                 
-                html_content += f"<span style='background-color: {bg_color}; padding: 2px 4px; margin: 0 2px; border-radius: 4px;' title='{tooltip}'>{display_token}</span>"
+                html_content += f"<span style='background-color: {bg_color}; color: #212529; padding: 2px 4px; margin: 0 2px; border-radius: 4px;' title='{tooltip}'>{display_token}</span>"
             
             html_content += "</div>"
             st.markdown(html_content, unsafe_allow_html=True)
