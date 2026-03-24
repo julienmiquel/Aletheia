@@ -91,7 +91,7 @@ if analyze_btn and text_input:
             st.success(f"Analysis complete in {elapsed:.2f}s")
         except Exception as e:
             st.error("An unexpected error occurred during analysis. Please try again later.")
-            print(f"Analysis Error: {e}")
+            logging.error(f"Analysis Error: {e}", exc_info=True)
             st.stop()
         
         # ---------------------------------------------------------
