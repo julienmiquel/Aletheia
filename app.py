@@ -4,6 +4,7 @@ import os
 import plotly.graph_objects as go
 import pandas as pd
 import html
+import logging
 
 # Set page config
 st.set_page_config(
@@ -68,14 +69,19 @@ def load_detector():
 # ---------------------------------------------------------
 st.markdown("<h1 class='main-header'>Aletheia: AI Text Forensics</h1>", unsafe_allow_html=True)
 
+MAX_INPUT_LENGTH = 10000
+
 # Input
-text_input = st.text_area("Analysis Target", placeholder="Paste suspicious text here...", height=200, max_chars=10000, help="Max length: 10,000 characters")
+text_input = st.text_area("Analysis Target", placeholder="Paste suspicious text here...", height=200, max_chars=MAX_INPUT_LENGTH, help=f"Max length: {MAX_INPUT_LENGTH:,} characters")
 
 col1, col2, col3 = st.columns([1,1,1])
 with col2:
     analyze_btn = st.button("Analyze Text", type="primary", use_container_width=True)
 
 if analyze_btn and text_input:
+    if len(text_input) > MAX_INPUT_LENGTH:
+        st.error(f"Text exceeds maximum length of {MAX_INPUT_LENGTH:,} characters.")
+        st.stop()
     if len(text_input) < 50:
         st.warning("Text is too short for reliable analysis. Please provide at least 50 characters.")
     else:
