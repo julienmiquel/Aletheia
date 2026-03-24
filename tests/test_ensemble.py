@@ -1,5 +1,4 @@
 import unittest
-import os
 from unittest.mock import MagicMock, patch
 from ia_detector.ensemble import EnsembleDetector
 
