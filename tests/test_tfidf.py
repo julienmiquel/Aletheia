@@ -32,5 +32,21 @@ class TestTFIDF(unittest.TestCase):
         detector2 = TfidfDetector(model_path=str(model_path))
         self.assertIsNotNone(detector2.pipeline)
 
+    def test_load_missing_model(self):
+        """Test that loading a missing model file doesn't crash and keeps pipeline as None."""
+        model_path = os.path.join(self.test_dir, "non_existent.pkl")
+        detector = TfidfDetector(model_path=model_path)
+
+        # Ensure it starts as None
+        self.assertIsNone(detector._pipeline)
+
+        # Call load and ensure it doesn't crash and stays None
+        detector.load()
+        self.assertIsNone(detector._pipeline)
+
+        # Also test with explicit path
+        detector.load(path=model_path)
+        self.assertIsNone(detector._pipeline)
+
 if __name__ == '__main__':
     unittest.main()
