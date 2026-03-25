@@ -3,18 +3,6 @@ from unittest.mock import MagicMock, patch
 import sys
 import os
 
-# Mock sklearn and other dependencies
-sys.modules['sklearn'] = MagicMock()
-sys.modules['sklearn.feature_extraction'] = MagicMock()
-sys.modules['sklearn.feature_extraction.text'] = MagicMock()
-sys.modules['sklearn.linear_model'] = MagicMock()
-sys.modules['sklearn.pipeline'] = MagicMock()
-sys.modules['ia_detector.perplexity'] = MagicMock()
-sys.modules['ia_detector.burstiness'] = MagicMock()
-sys.modules['ia_detector.gltr'] = MagicMock()
-sys.modules['ia_detector.binoculars'] = MagicMock()
-sys.modules['ia_detector.ensemble'] = MagicMock()
-sys.modules['ia_detector.llm_judge'] = MagicMock()
 
 from ia_detector.features import TfidfDetector
 

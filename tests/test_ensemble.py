@@ -10,8 +10,20 @@ class TestEnsemble(unittest.TestCase):
     @patch('ia_detector.ensemble.TfidfDetector')
     @patch('ia_detector.ensemble.LLMJudge')
     @patch('ia_detector.ensemble.SemanticConsistencyAnalyzer')
-    def setUp(self, MockSemantic, MockJudge, MockTfidf, MockGLTR, MockBurst, MockPPL):
+    @patch('ia_detector.ensemble.StructuralAnalyzer')
+    @patch('ia_detector.ensemble.SurrogatePPLDetector')
+    @patch('ia_detector.ensemble.VectorStyleAnalyzer')
+    def setUp(self, MockVector, MockSurrogate, MockStructural, MockSemantic, MockJudge, MockTfidf, MockGLTR, MockBurst, MockPPL):
         # Setup Mocks
+        self.mock_vector = MockVector.return_value
+        self.mock_vector.analyze.return_value = {}
+        
+        self.mock_surrogate = MockSurrogate.return_value
+        self.mock_surrogate.analyze.return_value = {}
+        
+        self.mock_structural = MockStructural.return_value
+        self.mock_structural.analyze.return_value = {}
+        
         self.mock_ppl = MockPPL.return_value
         self.mock_burst = MockBurst.return_value
         self.mock_gltr = MockGLTR.return_value
