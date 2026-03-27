@@ -1,0 +1,10 @@
+--- app.py
++++ app.py
+@@ -5,6 +5,7 @@
+ import plotly.graph_objects as go
+ import pandas as pd
+ import html
++import logging
+
+ # Set page config
+ st.set_page_config(

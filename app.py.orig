@@ -4,7 +4,6 @@ import os
 import plotly.graph_objects as go
 import pandas as pd
 import html
-import logging
 
 # Set page config
 st.set_page_config(
@@ -69,24 +68,16 @@ def load_detector():
 # ---------------------------------------------------------
 st.markdown("<h1 class='main-header'>Aletheia: AI Text Forensics</h1>", unsafe_allow_html=True)
 
-MAX_INPUT_LENGTH = 10000
-
 # Input
-text_input = st.text_area("Analysis Target", placeholder="Paste suspicious text here...", height=200, max_chars=MAX_INPUT_LENGTH, help=f"Max length: {MAX_INPUT_LENGTH:,} characters")
+text_input = st.text_area("Analysis Target", placeholder="Paste suspicious text here...", height=200, max_chars=10000, help="Max length: 10,000 characters")
 
 col1, col2, col3 = st.columns([1,1,1])
 with col2:
     analyze_btn = st.button("Analyze Text", type="primary", use_container_width=True)
 
 if analyze_btn and text_input:
-    if len(text_input) > MAX_INPUT_LENGTH:
-        st.error(f"Text exceeds maximum length of {MAX_INPUT_LENGTH:,} characters.")
-        st.stop()
     if len(text_input) < 50:
         st.warning("Text is too short for reliable analysis. Please provide at least 50 characters.")
-    elif len(text_input) > 10000:
-        st.error("Text exceeds maximum allowed length of 10,000 characters.")
-        st.stop()
     else:
         try:
             with st.spinner("Initializing Forensic Sensors..."):
@@ -102,21 +93,21 @@ if analyze_btn and text_input:
             st.error("An unexpected error occurred during analysis. Please try again later.")
             logging.error(f"Analysis Error: {e}", exc_info=True)
             st.stop()
-        
+
         # ---------------------------------------------------------
         # Results Dashboard
         # ---------------------------------------------------------
         score = result['combined_score']
         verdict = result['verdict']
         metrics = result['metrics']
-        
+
         # Top Level Verdict
         st.markdown("---")
         c1, c2, c3 = st.columns([1, 2, 1])
-        
+
         with c2:
             st.markdown(f"<div style='text-align: center;'><h3>AI Likelihood Score</h3></div>", unsafe_allow_html=True)
-            
+
             # Gauge Chart
             fig = go.Figure(go.Indicator(
                 mode = "gauge+number",
@@ -134,7 +125,7 @@ if analyze_btn and text_input:
             ))
             fig.update_layout(height=250, margin={'t':0,'b':0,'l':0,'r':0})
             st.plotly_chart(fig, use_container_width=True)
-            
+
             verdict_class = "verdict-ai" if verdict == "AI" else "verdict-human"
             safe_verdict = html.escape(verdict.upper())
             st.markdown(f"<div style='text-align: center;'><span class='{verdict_class}'>{safe_verdict}</span></div>", unsafe_allow_html=True)
@@ -143,9 +134,9 @@ if analyze_btn and text_input:
 
         # Detailed Metrics
         st.subheader("📡 Forensic Signals")
-        
+
         m_col1, m_col2, m_col3, m_col4 = st.columns(4)
-        
+
         # Helper for metric interpretation
         def get_interpretation(value, threshold, is_greater_ai=True):
             is_ai = value > threshold if is_greater_ai else value < threshold
@@ -156,26 +147,26 @@ if analyze_btn and text_input:
         with m_col1:
             ppl = metrics.get('perplexity', 0)
             st.metric("Perplexity", f"{ppl:.1f}", delta="Low = AI", delta_color="inverse", help="Measures how 'surprised' a model is by the text. AI text is very low perplexity (predictable).")
-            st.markdown(get_interpretation(ppl or 0, 40, False))
-            st.progress(min(100, int(ppl or 0))/100) # Simple visual, capped at 100
-            
+            st.markdown(get_interpretation(ppl, 40, False))
+            st.progress(min(100, int(ppl))/100) # Simple visual, capped at 100
+
         with m_col2:
             burst = metrics.get('burstiness', 0)
             st.metric("Burstiness", f"{burst:.3f}", delta="Low = AI", delta_color="inverse", help="Measures the variation in sentence structure. AI text is monotone (low burstiness).")
-            st.markdown(get_interpretation(burst or 0, 0.4, False))
+            st.markdown(get_interpretation(burst, 0.4, False))
             st.progress(min(1.0, burst))
-            
+
         with m_col3:
             green = metrics.get('gltr_green', 0)
             st.metric("GLTR Green %", f"{green*100:.1f}%", delta="High = AI", delta_color="inverse", help="Percentage of words that are in the Top-10 expected predictions. High means the text follows the 'most likely' path.")
-            st.markdown(get_interpretation(green or 0, 0.6, True))
-            st.progress(min(1.0, green or 0))
-            
+            st.markdown(get_interpretation(green, 0.6, True))
+            st.progress(min(1.0, green))
+
         with m_col4:
             tfidf = metrics.get('tfidf_prob', 0)
-            st.metric("Stylistic Match", f"{(tfidf or 0)*100:.1f}%", delta="High = AI", delta_color="inverse", help="Probability that the writing style matches known AI artifacts (e.g. overused transition words).")
-            st.markdown(get_interpretation(tfidf or 0, 0.5, True))
-            st.progress(min(1.0, tfidf or 0))
+            st.metric("Stylistic Match", f"{tfidf*100:.1f}%", delta="High = AI", delta_color="inverse", help="Probability that the writing style matches known AI artifacts (e.g. overused transition words).")
+            st.markdown(get_interpretation(tfidf, 0.5, True))
+            st.progress(min(1.0, tfidf))
 
         # ---------------------------------------------------------
         # Visual Forensics (GLTR)
@@ -183,17 +174,17 @@ if analyze_btn and text_input:
         if 'gltr_results' in metrics and metrics['gltr_results']:
             st.subheader("👁️ Visual Forensics")
             st.caption("Common words (Top 10) are Green. Unexpected words are Red/Purple. AI text is typically a 'Sea of Green'.")
-            
+
             gltr_data = metrics['gltr_results']
             html_content = "<div style='line-height: 1.8; font-family: monospace;'>"
-            
+
             colors = {
                 "Green": "#d4edda",   # Light Green
                 "Yellow": "#fff3cd",  # Light Yellow
                 "Red": "#f8d7da",     # Light Red
                 "Purple": "#e2e3e5"   # Light Purple/Gray
             }
-            
+
             for item in gltr_data:
                 token = item['token']
                 # Clean up GPT-2 tokens (remove Ġ)
@@ -203,16 +194,16 @@ if analyze_btn and text_input:
                 display_token = html.escape(display_token)
 
                 bg_color = colors.get(item['bucket'], "#ffffff")
-                
+
                 # Tooltip with Rank
                 tooltip = f"Rank: {item['rank']} | Prob: {item['prob']:.4f}"
-                
-                html_content += f"<span style='background-color: {bg_color}; color: #212529; padding: 2px 4px; margin: 0 2px; border-radius: 4px;' title='{tooltip}'>{display_token}</span>"
-            
+
+                html_content += f"<span style='background-color: {bg_color}; padding: 2px 4px; margin: 0 2px; border-radius: 4px;' title='{tooltip}'>{display_token}</span>"
+
             html_content += "</div>"
             st.markdown(html_content, unsafe_allow_html=True)
             st.markdown("---")
-            
+
         # Semantic Section
         if use_semantic:
             st.markdown("#### 🧠 Semantic Analysis")
@@ -222,13 +213,13 @@ if analyze_btn and text_input:
                 st.metric("Consistency Score", f"{const_score}/100", help="LLM-based check for logical contradictions.")
             with s_col2:
                 coh_score = metrics.get('coherence_metric', 0)
-                # Coherence: High = Human/Safe, Low = Disjointed. 
-                # Note: Very high can be AI repetition. 
+                # Coherence: High = Human/Safe, Low = Disjointed.
+                # Note: Very high can be AI repetition.
                 st.metric("Coherence Metric", f"{coh_score:.1f}", help="Vector-based flow analysis. Very low (<10) indicates hallucination/disjointed text.")
             with s_col3:
                 judge_score = metrics.get('llm_judge_score', 0)
                 st.metric("LLM Judge Suspicion", f"{judge_score}%")
-                
+
         # Raw Data Expander
         with st.expander("View Raw JSON Report"):
             st.json(result)
